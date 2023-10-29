@@ -30,6 +30,7 @@ PIR_Sensor_COnnection.png
 
 
 
+
 3  .  Speaker 
 
 
@@ -51,5 +52,29 @@ Volume Adjustment:  During research, a lot of places said we might  have to use 
  
 
 https://www.adafruit.com/product/3885 (Link to the Speaker we will be using in our project )
+
+
+
+
+
+  3. Camera Module 
+ 
+
+This camera module features a 5-megapixel OV5647 sensor with a wide 160-degree viewing angle and adjustable focus. It offers a resolution of 2952 x 1944 pixels and is designed for daytime use, which is exactly what we want in our Smart doorBell
+
+
+## Specifications
+ ** Chip: OV5647
+ ** Pixel Count: 5 million pixels
+ ** Resolution: 2952 x 1944 pixels
+ ** Viewing Angle: 160 degrees
+ ** Aperture (F): 2.35
+ ** Focal Length: Adjustable
+ **CMOS Size: 1/4 inch
+ ** Driver Requirement: No separate driver needed (free drive)
+ ** Sensor: Best Pixel: 1080p
+ ** Dimensions: 25mm x 24mm
+ ** Usage: Suitable for daytime photography
+ ** Standard Cable Length: 16cm (with the flexibility to use with cables ranging from 30cm to 75cm)
  
 
