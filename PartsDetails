@@ -1,0 +1,15 @@
+# Raspberry Pi Used in This Project
+
+![Raspberry Pi 400](images/raspberry_pi_400.jpg)
+
+## Specifications
+
+- **Processor:** Broadcom BCM2711 quad-core Cortex-A72 (ARM v8) 64-bit SoC @ 1.8 GHz
+- **RAM:** 4 GB LPDDR4-3200
+- **Connectivity:** Dual-band (2.4 GHz and 5.0 GHz) IEEE 802.11b/g/n/ac wireless LAN
+
+For more detailed specifications, you can visit the official [Raspberry Pi 400 page](https://www.raspberrypi.com/products/raspberry-pi-400/specifications/).
+
+## Why We Chose Raspberry Pi
+
+We selected the Raspberry Pi 400 for our project because it is a versatile single-board computer widely used for various projects. Additionally, most of our team members already have experience with this particular Pi model.
