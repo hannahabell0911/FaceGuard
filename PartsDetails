@@ -110,3 +110,36 @@ International Protection Rating (IP65): Provides dust and water resistance.
 Controller Type: Ring, Push Button, Momentary switch: Push & Hold (ON); Release (OFF)
 There are no pigtails included, so soldering is required for installation.
 
+
+
+
+
+6. Power Supply 
+
+
+
+The way we are going to supply power to the Pi is by using a micro USB plug and taking it directly from the plug in the wall .Providing a power supply with a current rating equal to or greater than 2.5A ensures that the Raspberry Pi operates reliably, especially when it's connected to various peripherals or when running power-hungry tasks. It helps prevent issues such as voltage drops or unexpected shutdowns.
+If there is a need for extra power, as I read a few articles, I came across the fact that we might be able to input power through the GPIO pins . Using the Power GPIO pin , either 1 or 2, we might be able to input power into the raspberry Pi
+
+But the source for now is going to be the  A/C current through a Micro USB 
+
+
+
+
+
+**********************************  Wifi connectivity   *********************************************
+
+
+Wi-Fi can provide internet connectivity to your Raspberry Pi. With internet access, our Raspberry Pi can access external services and fetch data that may be useful for the facial recognition system. This internet connection can be useful for keeping your software and database up-to-date.
+When the user installs and opens your app, it should guide them through the initial setup process. During this process, the app will need to establish a connection to the Raspberry Pi, which serves as the doorbell's server; basically, the Raspberry Pi and the user will  be on the same WiFi networks . 
+
+The GSM module is something that I would like to have.
+
+
+
+
+
+
+
+
+
