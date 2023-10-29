@@ -3,13 +3,53 @@
 ![Raspberry Pi 400](images/raspberry_pi_400.jpg)
 
 ## Specifications
-
 - **Processor:** Broadcom BCM2711 quad-core Cortex-A72 (ARM v8) 64-bit SoC @ 1.8 GHz
-- **RAM:** 4 GB LPDDR4-3200
-- **Connectivity:** Dual-band (2.4 GHz and 5.0 GHz) IEEE 802.11b/g/n/ac wireless LAN
+**RAM:** 4 GB LPDDR4-3200
+**Connectivity:** Dual-band (2.4 GHz and 5.0 GHz) IEEE 802.11b/g/n/ac wireless LAN
 
 For more detailed specifications, you can visit the official [Raspberry Pi 400 page](https://www.raspberrypi.com/products/raspberry-pi-400/specifications/).
 
 ## Why We Chose Raspberry Pi
-
 We selected the Raspberry Pi 400 for our project because it is a versatile single-board computer widely used for various projects. Additionally, most of our team members already have experience with this particular Pi model.
+
+
+
+
+
+2 .   PIR Sensor 
+
+PIR_Sensor_COnnection.png
+
+## Specifications
+  ** Input voltage: DC 4.5~20V
+  ** Static current: 50 uA
+  ** Output signal: 0.3V (Output high when motion detected)
+  ** Sentry angle: 110 degree
+  **Sentry distance: max 7 m
+
+
+
+
+3  .  Speaker 
+
+
+We got a class D audio amplifier on board and a 1 Watt, 8 ohm speaker.
+Voltage Range: The audio signal can range up to the power pin voltage, which can be 3V or 5V peak-to-peak, depending on our setup.
+Volume Adjustment:  During research, a lot of places said we might  have to use a screwdriver for adjusting the sound levels
+ 
+ 
+## Specifications
+
+  ** Power Output: 1 Watt
+  **Impedance: 8 ohms
+  **Voltage Range: 3V to 5V peak-to-peak
+  **Amplifier Type: Class D
+  ** Connector Options: 3-pin JST socket, alligator clips, sew-pads
+  ** Built-in Speaker: Yes (8-ohm)
+  ** Audio Signal Coupling: AC coupled
+  **Adjustable Volume: Yes
+ 
+
+https://www.adafruit.com/product/3885 (Link to the Speaker we will be using in our project )
+ 
+
