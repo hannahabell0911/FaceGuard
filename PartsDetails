@@ -1,18 +1,22 @@
 # Raspberry Pi Used in This Project
 
-![Raspberry Pi 400](images/raspberry_pi_400.jpg)
+Raspberry Pi 3  is the one used in this project 
+
 
 ## Specifications
-- **Processor:** Broadcom BCM2711 quad-core Cortex-A72 (ARM v8) 64-bit SoC @ 1.8 GHz
-**RAM:** 4 GB LPDDR4-3200
-**Connectivity:** Dual-band (2.4 GHz and 5.0 GHz) IEEE 802.11b/g/n/ac wireless LAN
-
-For more detailed specifications, you can visit the official [Raspberry Pi 400 page](https://www.raspberrypi.com/products/raspberry-pi-400/specifications/).
-
-## Why We Chose Raspberry Pi
-We selected the Raspberry Pi 400 for our project because it is a versatile single-board computer widely used for various projects. Additionally, most of our team members already have experience with this particular Pi model.
-
-
+   ** Broadcom BCM2387 chipset
+   **2GHz Quad-Core ARM Cortex-A53
+   **802.11 bgn Wireless LAN and Bluetooth 4.1 (Bluetooth Classic and LE)
+   **  1GB RAM
+   ** 64-bit CPU
+   ** 4 x USB ports
+   **  4 pole Stereo output and Composite video port
+   ** Full-size HDMI
+   **  10/100 BaseT Ethernet socketbr
+   ** CSI camera port for connecting the Raspberry Pi camera
+   **  DSI display port for connecting the Raspberry Pi touch-screen display
+   **  Micro SD port for loading your operating system and storing data
+   ** Micro USB power source
 
 
 
@@ -57,7 +61,7 @@ https://www.adafruit.com/product/3885 (Link to the Speaker we will be using in o
 
 
 
-  3. Camera Module 
+  4. Camera Module 
  
 
 This camera module features a 5-megapixel OV5647 sensor with a wide 160-degree viewing angle and adjustable focus. It offers a resolution of 2952 x 1944 pixels and is designed for daytime use, which is exactly what we want in our Smart doorBell
@@ -76,5 +80,33 @@ This camera module features a 5-megapixel OV5647 sensor with a wide 160-degree v
  ** Dimensions: 25mm x 24mm
  ** Usage: Suitable for daytime photography
  ** Standard Cable Length: 16cm (with the flexibility to use with cables ranging from 30cm to 75cm)
+
+
+
+
+
+
+5.Buttons
+button.png
+
  
+
+Description:
+
+Operation Mode: ON-NONE-OFF
+Switch and LED are separated, providing flexibility in operation.
+Rated LED voltage is 1.8–2.8V, with the option to fit it for a 12V system by soldering the included resistor.
+perfect for our Doorbell project 
+ 
+
+Specifications:
+
+Current Rating: 3 Amps
+Operating Voltage: 250 Volts
+Contact Type: Normally Open
+Terminal: SPST
+Actuator Type: Push Button
+International Protection Rating (IP65): Provides dust and water resistance.
+Controller Type: Ring, Push Button, Momentary switch: Push & Hold (ON); Release (OFF)
+There are no pigtails included, so soldering is required for installation.
 
