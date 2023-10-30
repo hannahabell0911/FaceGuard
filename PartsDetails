@@ -1,0 +1,145 @@
+# Raspberry Pi Used in This Project
+
+Raspberry Pi 3  is the one used in this project 
+
+
+## Specifications
+   ** Broadcom BCM2387 chipset
+   **2GHz Quad-Core ARM Cortex-A53
+   **802.11 bgn Wireless LAN and Bluetooth 4.1 (Bluetooth Classic and LE)
+   **  1GB RAM
+   ** 64-bit CPU
+   ** 4 x USB ports
+   **  4 pole Stereo output and Composite video port
+   ** Full-size HDMI
+   **  10/100 BaseT Ethernet socketbr
+   ** CSI camera port for connecting the Raspberry Pi camera
+   **  DSI display port for connecting the Raspberry Pi touch-screen display
+   **  Micro SD port for loading your operating system and storing data
+   ** Micro USB power source
+
+
+
+2 .   PIR Sensor 
+
+PIR_Sensor_COnnection.png
+
+## Specifications
+  ** Input voltage: DC 4.5~20V
+  ** Static current: 50 uA
+  ** Output signal: 0.3V (Output high when motion detected)
+  ** Sentry angle: 110 degree
+  **Sentry distance: max 7 m
+
+
+
+
+
+3  .  Speaker 
+
+
+We got a class D audio amplifier on board and a 1 Watt, 8 ohm speaker.
+Voltage Range: The audio signal can range up to the power pin voltage, which can be 3V or 5V peak-to-peak, depending on our setup.
+Volume Adjustment:  During research, a lot of places said we might  have to use a screwdriver for adjusting the sound levels
+ 
+ 
+## Specifications
+
+  ** Power Output: 1 Watt
+  **Impedance: 8 ohms
+  **Voltage Range: 3V to 5V peak-to-peak
+  **Amplifier Type: Class D
+  ** Connector Options: 3-pin JST socket, alligator clips, sew-pads
+  ** Built-in Speaker: Yes (8-ohm)
+  ** Audio Signal Coupling: AC coupled
+  **Adjustable Volume: Yes
+ 
+
+https://www.adafruit.com/product/3885 (Link to the Speaker we will be using in our project )
+
+
+
+
+
+  4. Camera Module 
+ 
+
+This camera module features a 5-megapixel OV5647 sensor with a wide 160-degree viewing angle and adjustable focus. It offers a resolution of 2952 x 1944 pixels and is designed for daytime use, which is exactly what we want in our Smart doorBell
+
+
+## Specifications
+ ** Chip: OV5647
+ ** Pixel Count: 5 million pixels
+ ** Resolution: 2952 x 1944 pixels
+ ** Viewing Angle: 160 degrees
+ ** Aperture (F): 2.35
+ ** Focal Length: Adjustable
+ **CMOS Size: 1/4 inch
+ ** Driver Requirement: No separate driver needed (free drive)
+ ** Sensor: Best Pixel: 1080p
+ ** Dimensions: 25mm x 24mm
+ ** Usage: Suitable for daytime photography
+ ** Standard Cable Length: 16cm (with the flexibility to use with cables ranging from 30cm to 75cm)
+
+
+
+
+
+
+5.Buttons
+button.png
+
+ 
+
+Description:
+
+Operation Mode: ON-NONE-OFF
+Switch and LED are separated, providing flexibility in operation.
+Rated LED voltage is 1.8–2.8V, with the option to fit it for a 12V system by soldering the included resistor.
+perfect for our Doorbell project 
+ 
+
+Specifications:
+
+Current Rating: 3 Amps
+Operating Voltage: 250 Volts
+Contact Type: Normally Open
+Terminal: SPST
+Actuator Type: Push Button
+International Protection Rating (IP65): Provides dust and water resistance.
+Controller Type: Ring, Push Button, Momentary switch: Push & Hold (ON); Release (OFF)
+There are no pigtails included, so soldering is required for installation.
+
+
+
+
+
+6. Power Supply 
+
+
+
+The way we are going to supply power to the Pi is by using a micro USB plug and taking it directly from the plug in the wall .Providing a power supply with a current rating equal to or greater than 2.5A ensures that the Raspberry Pi operates reliably, especially when it's connected to various peripherals or when running power-hungry tasks. It helps prevent issues such as voltage drops or unexpected shutdowns.
+If there is a need for extra power, as I read a few articles, I came across the fact that we might be able to input power through the GPIO pins . Using the Power GPIO pin , either 1 or 2, we might be able to input power into the raspberry Pi
+
+But the source for now is going to be the  A/C current through a Micro USB 
+
+
+
+
+
+**********************************  Wifi connectivity   *********************************************
+
+
+Wi-Fi can provide internet connectivity to your Raspberry Pi. With internet access, our Raspberry Pi can access external services and fetch data that may be useful for the facial recognition system. This internet connection can be useful for keeping your software and database up-to-date.
+When the user installs and opens your app, it should guide them through the initial setup process. During this process, the app will need to establish a connection to the Raspberry Pi, which serves as the doorbell's server; basically, the Raspberry Pi and the user will  be on the same WiFi networks . 
+
+The GSM module is something that I would like to have.
+
+
+
+
+
+
+
+
+
