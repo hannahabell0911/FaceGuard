@@ -1,0 +1,41 @@
+.bg-image {
+  /* background-image: url("your-image-url.jpg"); */
+  background-size: cover;
+  background-position: center center;
+}
+
+.login-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+}
+
+.brand-wrapper .logo {
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.login-btn {
+  color: #fff;
+  background-color: #000;
+  border: none;
+  padding: 10px;
+  width: 100%;
+}
+
+.forgot-password-link {
+  display: block;
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.login-wrapper-footer-text {
+  margin-top: 24px;
+}
