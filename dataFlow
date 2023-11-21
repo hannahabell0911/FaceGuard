@@ -1,0 +1,29 @@
+**_ Data Flow for the folowing project is gonna be like the given order below _**
+
+**_User Interaction:_**
+
+A user presses the doorbell button or is detected by the PIR motion sensor.
+The Raspberry Pi captures an image from the camera module.
+
+**_Facial Recognition:_**
+
+The captured image is processed for facial recognition on the Raspberry Pi.
+
+If a recognized face is detected, the system takes appropriate action .
+
+The face is gonna is displayed on the App regardless so if it is gonna be recognized or not , if it recognized the face the name will be outputted in the app as well
+
+**_Real-time Updates:_**
+
+PubNub facilitates real-time communication between the Raspberry Pi and the Android app .
+
+Users receive real-time notifications and updates on the app when someone is at the door.
+
+**_Backend Services (AWS Instances):_**
+
+EC2 instances host the Flask web server, which provides API endpoints for communication with the Raspberry Pi and the Android app.
+
+These instances handle user authentication, request processing, and interactions with the SQL database.
+Data Storage:
+
+Captured images and relevant sensor data are stored in the SQL database, which may be hosted on AWS RDS for reliability.
