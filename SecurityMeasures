@@ -1,0 +1,20 @@
+## Security Measures
+
+**_Security of Data at Rest _**
+
+    ** AWS RDS
+
+      This stands for Relational Database Service
+      when we host our SQL databse on AWS RDS , which can use the AWS robust security features and measures
+
+      AWS RDS offers encryption at rest using AWS Key Management Service . This means your user data, camera sensor data, and authentication information are encrypted using industry-standard encryption algorithms.
+
+
+
+
+    ** EC2 Instances:
+
+      Data stored on EC2 instances, such as application logs or temporary files, should be encrypted using AWS EBS (Elastic Block Store) encryption. This ensures that all data written to disk is automatically encrypted.
+
+
+-
