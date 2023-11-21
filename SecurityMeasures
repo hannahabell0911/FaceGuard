@@ -16,5 +16,26 @@
 
       Data stored on EC2 instances, such as application logs or temporary files, should be encrypted using AWS EBS (Elastic Block Store) encryption. This ensures that all data written to disk is automatically encrypted.
 
+**Security of Data at Transit \***
 
--
+    **Between Raspberry Pi and AWS
+        HTTPS will be used for any RESTful API communication, ensuring that data sent over the internet is encrypted
+
+        If we use MQTT , we will use to secure it using TLS( Transport layer Security )
+
+
+    **Between AWS Services**
+        Communication between different AWS services, like EC2 instances and RDS, is secured through AWS’s internal networking and security measures.
+
+
+    ** App Security
+         Secure API endpoints in your Flask application with HTTPS to      ensure encrypted communication between the app and the backend.
+
+
+    ** Ensure that PubNub communication channels are encrypted. PubNub supports TLS/SSL encryption for data in transit.
+
+**_ other necessary features that are required : _**
+
+User Data Privacy has to be looked into with careful consideration , regulations like GDPR have to be prioritised . How this can bw achieved is implementing data minimization, and gathering only the data that nis essential to the project .
+
+https://www.fotoware.com/blog/5-things-you-should-know-about-gdpr-for-images
