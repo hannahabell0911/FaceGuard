@@ -18,6 +18,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +44,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
 @Composable
 fun LoginForm(onSignUpClicked: () -> Unit) {
     Column(
@@ -50,9 +55,11 @@ fun LoginForm(onSignUpClicked: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(painter = painterResource(id = R.drawable.faceguard_icon),
-            contentDescription = null,
-            modifier = Modifier.size(100.dp)
+        Image(
+            painter = painterResource(id = R.drawable.faceguard_icon),
+            contentDescription = "Logo",
+            modifier = Modifier.size(200.dp),
+            contentScale = ContentScale.Fit
         )
 
         TextInput(InputType.Username)
@@ -86,9 +93,11 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(painter = painterResource(id = R.drawable.faceguard_icon),
-            contentDescription = null,
-            modifier = Modifier.size(100.dp)
+        Image(
+            painter = painterResource(id = R.drawable.faceguard_icon),
+            contentDescription = "Logo",
+            modifier = Modifier.size(200.dp),
+            contentScale = ContentScale.Fit
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -181,8 +190,8 @@ fun TextInput(inputType: InputType) {
         leadingIcon = { Icon(imageVector = inputType.icon, contentDescription = null) },
         label = { Text(inputType.label) },
         colors = TextFieldDefaults.textFieldColors(
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White
         ),
         singleLine = true,
         keyboardOptions = inputType.keyboardOptions,
