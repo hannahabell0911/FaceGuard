@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -23,12 +24,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Kotlin_FaceGuardTheme {
-                var showRegistration by remember { mutableStateOf(false) }
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.Black
+                ) {
+                    var showRegistration by remember { mutableStateOf(false) }
 
-                if (showRegistration) {
-                    RegistrationForm()
-                } else {
-                    LoginForm { showRegistration = true }
+                    if (showRegistration) {
+                        RegistrationForm { showRegistration = false }
+                    } else {
+                        LoginForm { showRegistration = true }
+                    }
                 }
             }
         }
@@ -57,13 +63,13 @@ fun LoginForm(onSignUpClicked: () -> Unit) {
         }
 
         Divider(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+            color = Color.White,
             thickness = 1.dp,
             modifier = Modifier.padding(top = 48.dp)
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Don't have an Account yet?", color = MaterialTheme.colorScheme.onSurface)
+            Text("Don't have an Account yet?", color = Color.White)
             TextButton(onClick = onSignUpClicked) {
                 Text("Sign Up")
             }
@@ -72,7 +78,7 @@ fun LoginForm(onSignUpClicked: () -> Unit) {
 }
 
 @Composable
-fun RegistrationForm() {
+fun RegistrationForm(onLoginClicked: () -> Unit) {
     Column(
         Modifier
             .padding(24.dp)
@@ -85,27 +91,37 @@ fun RegistrationForm() {
             modifier = Modifier.size(100.dp)
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.FirstName)
+
+        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Surname)
+
+        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Email)
+
+        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Password)
+
+        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.ConfirmPassword)
 
+        Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
             Text("Register", Modifier.padding(vertical = 8.dp))
+        }
 
-//            Divider(
-//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-//                thickness = 1.dp,
-//                modifier = Modifier.padding(top = 48.dp)
-//            )
-//
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Text("Already have an Account yet?", color = MaterialTheme.colorScheme.onSurface)
-//                TextButton(onClick = {}) {
-//                    Text("Login")
-//                }
-//            }
+        Divider(
+            color = Color.White,
+            thickness = 1.dp,
+            modifier = Modifier.padding(vertical = 48.dp)
+        )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Already have an Account?", color = Color.White)
+            TextButton(onClick = onLoginClicked) {
+                Text("Login")
+            }
         }
     }
 }
@@ -173,4 +189,3 @@ fun TextInput(inputType: InputType) {
         visualTransformation = inputType.visualTransformation
     )
 }
-
