@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Login()
                 }
             }
         }
@@ -30,17 +30,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun Login()
+{
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Kotlin_FaceGuardTheme {
-        Greeting("Android")
-    }
 }
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    Kotlin_FaceGuardTheme {
+//        Login()
+//    }
+//}
