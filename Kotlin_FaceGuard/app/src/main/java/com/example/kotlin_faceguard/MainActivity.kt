@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +62,13 @@ fun Login()
 
         TextInput()
         TextInput()
+        Button(onClick = {}, modifier = Modifier.fillMaxSize())
+        {
+            Text("Login", Modifier.padding(vertical = 8.dp))
+        }
+        Divider(color=Color.White.copy(alpha = 0.3f),
+            thickness = 1.dp,
+            modifier = Modifier.padding(top = 48.dp))
     }
 
 }
