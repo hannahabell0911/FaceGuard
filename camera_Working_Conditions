@@ -1,0 +1,24 @@
+## Camera Module Working Conditions
+
+The few questons that were arised in the feed back were the following questions
+
+---
+
+1. optimal sunlight condition for the camera to work
+2. angles that the camera sensors is expected to perform from
+3. Any other environmental factors that might have an effect
+
+---
+
+Answers to the following questions
+
+1. Optimal Sunlight Conditions for the Camera to Work are :
+   \*\* This is a low light sensetive and and a HDR camera , so this should work well in good light to low light , as this is not a night vision camera this will have its limitation at the might time
+
+   \*\* To solve this problem we have to advice the user to setup a led white light beside the S,art door bell so that even at night time the face is well lit and clear
+
+   \*\* having a exterrnal light will be very benificial as it will help the camera to capture the light and the face in a more accurate manner
+
+   \*\* Also the way less light is a hinderance over- exposure is also a problem , if it is very sunny and the face is overexposed , the camera module is gonna be error prone
+
+   \*\* To solve this problem , there ccan be a shed above the door bell to eliminate the problem of over exposure
