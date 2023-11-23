@@ -3,25 +3,26 @@ package com.example.kotlin_faceguard
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.ui.layout.ContentScale
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,19 +33,21 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.Black
                 ) {
-                    var showRegistration by remember { mutableStateOf(false) }
+                    var showScreen by remember { mutableStateOf(Screen.Login) }
 
-                    if (showRegistration) {
-                        RegistrationForm { showRegistration = false }
-                    } else {
-                        LoginForm { showRegistration = true }
+                    when (showScreen) {
+                        Screen.Login -> LoginForm(
+
+                            onSignUpClicked = { showScreen = Screen.Registration }
+                        )
+                        Screen.Registration -> RegistrationForm { showScreen = Screen.Login }
+                        Screen.LiveFeed -> LiveFeedScreen()
                     }
                 }
             }
         }
     }
 }
-
 
 
 @Composable
@@ -228,4 +231,12 @@ fun TextInput(inputType: InputType) {
         keyboardOptions = inputType.keyboardOptions,
         visualTransformation = inputType.visualTransformation
     )
+}
+
+
+
+enum class Screen {
+    Login,
+    Registration,
+    LiveFeed
 }
