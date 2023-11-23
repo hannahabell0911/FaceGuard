@@ -110,6 +110,9 @@ def facialRecognition(image):
             return "Unknown"
         
 def ring():
+    connect1 = mysql.connector.connect(**config)
+    cursor1 = connect1.cursor()
+    
     timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
     file = f"{timestamp}.jpg"
     camera.capture(file)
@@ -126,8 +129,15 @@ def ring():
         "person": name
     }    
     
+    sql = "INSERT INTO visitor_history (name, timestamp) VALUES (%s, %s)"
+    val = (name, timestamp)
+    cursor1.execute(sql, val)
+    connect1.commit()
+    
     publish_message("doorbell_channel", doorbellEvent)
     
+    cursor1.close()
+    connect1.close()
     return jsonify(doorbellEvent)           
         
 ringButton.when_pressed = ring
