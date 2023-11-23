@@ -8,9 +8,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -137,43 +139,103 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         }
     }
 }
-
 @Composable
 fun LiveFeedScreen() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween, // This will distribute the space evenly
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Hannah's home",
-            color = Color.White,
-            style = MaterialTheme.typography.bodyLarge, // Increase the font size for "Hannah's home"
-            modifier = Modifier.align(Alignment.Start) // Align text to the start
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(Color.Gray), // Placeholder for the live feed image
-            contentAlignment = Alignment.Center
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround // This will space the elements evenly
         ) {
-            Text("Live feed image placeholder", color = Color.White)
+            Text(
+                text = "John is at the door",
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // Make the box take up 1/3 of the space
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Live feed image placeholder", color = Color.White)
+            }
+
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Today", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+                Text("Motion first detected at: 6.28 am", color = Color.White)
+                Text("Face detected: John Doe", color = Color.White)
+                Text("Relationship: Homeowner", color = Color.White)
+            }
         }
 
-        Column( // Use a Column here to format details in a tabular manner
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text("Today", color = Color.White, style = MaterialTheme.typography.bodyLarge)
-            Text("Motion first detected at: 6.28 am", color = Color.White)
-            Text("Face detected: John Smith ", color = Color.White)
-            Text("Relationship: Homeowner", color = Color.White)
+        // Chat message box at the bottom
+        ChatMessageBox(Modifier.align(Alignment.BottomCenter))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChatMessageBox(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(Color.DarkGray, shape = MaterialTheme.shapes.small)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.AccountCircle,
+            contentDescription = "Profile",
+            tint = Color.White
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        TextField(
+            value = "",
+            onValueChange = {},
+            placeholder = { Text("Message...") },
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = Color.White,
+                cursorColor = Color.White,
+//                backgroundColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            modifier = Modifier.weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        IconButton(onClick = { /* Handle send message */ }) {
+            Icon(
+                imageVector = Icons.Default.Send,
+                contentDescription = "Send Message",
+                tint = Color.White
+            )
+        }
+
+        IconButton(onClick = { /* Handle emoji */ }) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Send Emoji",
+                tint = Color.White
+            )
         }
     }
 }
+
 
 sealed class InputType(
     val label: String,
