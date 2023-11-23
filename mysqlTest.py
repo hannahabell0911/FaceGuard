@@ -1,11 +1,19 @@
 import mysql.connector
 from mysql.connector import Error
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+host = os.getenv("HOST")
+user = os.getenv("USER")
+password = os.getenv("PASSWORD")
+database = os.getenv("DATABASE")
 
 config = {
-    'host': '13.48.48.253',
-    'database': 'faceguard',
-    'user': 'anilatici',
-    'password': 'Anilatici01.'
+    'host': host,
+    'database': database,
+    'user': user,
+    'password': password 
 }
 
 cnx = mysql.connector.connect(**config)
