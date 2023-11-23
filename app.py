@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import Error
 import os
+import numpy as np
+import json
 
 host = os.getenv("HOST")
 user = os.getenv("USER")
@@ -41,6 +43,31 @@ else:
     
 ringButton = gpiozero.Button(17)
 camera = PiCamera()    
+
+def facialRecognition(image):
+    imageToCheck = face_recognition.load_image_file(image)
+    faceLocations = face_recognition.face_locations(imageToCheck)
+    faceEncodings = face_recognition.face_encodings(imageToCheck, faceLocations)
+
+    connect = mysql.connector.connect(**config)
+    cursor = connect.cursor()
+    connect.commit()
+    cursor.execute("SELECT name, face_encoding from recognized_faces")
+    known_encodings = cursor.fetchall()
+
+    for i, unknown_encoding in enumerate(faceEncodings):
+        match_found = False
+        for (name, known_encoding) in known_encodings:
+            known_encoding_array = np.array(json.loads(known_encoding))
+            results = face_recognition.compare_faces([known_encoding_array], unknown_encoding)
+
+            if True in results:
+                print(f'Match found: {name} matches with unknown face {i}')
+                match_found = True
+                break
+        if not match_found:
+            print(f'No match found for unknown face {i}')
+        
     
 app = Flask(__name__)
     
