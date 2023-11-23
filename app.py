@@ -17,6 +17,7 @@ import pygame
 import time
 
 pygame.mixer.init()
+load_dotenv()
 
 host = os.getenv("HOST")
 user = os.getenv("USER")
@@ -30,21 +31,21 @@ config = {
     'password': password 
 }
 
-cnx = mysql.connector.connect(**config)
+#cnx = mysql.connector.connect(**config)
 
 
-if cnx.is_connected():
-    print("Connected to MySQL database")
+#if cnx.is_connected():
+    #print("Connected to MySQL database")
     #with cnx.cursor() as cursor:
     #    selectAllQuery = cursor.execute("SELECT * FROM recognized_faces")
     #    rows = cursor.fetchall()
     #    for row in rows:
     #        print(row)
             
-    cnx.close()
+    #cnx.close()
     
-else:
-    print("Connection failed")
+#else:
+    #print("Connection failed")
     
 ringButton = gpiozero.Button(17)
 camera = PiCamera()    
@@ -67,7 +68,7 @@ def facialRecognition(image):
             results = face_recognition.compare_faces([known_encoding_array], unknown_encoding)
 
             if True in results:
-                message = f"Face matches with {name}"
+                message = f"Greetings {name}, I will be with you in a minute."
                 print(message)
             
                 tts = gTTS(text=message, lang='en')
@@ -78,16 +79,41 @@ def facialRecognition(image):
                 while pygame.mixer.music.get_busy():
                     time.sleep(1)
                 match_found = True
-                break
+                return name
         if not match_found:
             print(f'No match found for unknown face {i}')
+            return "Unknown"
         
+def ring():
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
+    file = f"{timestamp}.jpg"
+    camera.capture(file)
+    
+    pygame.mixer.music.load("doorbell.mp3")
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(1)
+        
+    name = facialRecognition(file)
+    
+    doorbellEvent = {
+        "timestamp": timestamp,
+        "person": name
+    }    
+    
+    return jsonify(doorbellEvent)           
+        
+ringButton.when_pressed = ring
     
 app = Flask(__name__)
     
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+
+@app.route('/ring', methods=['GET'])
+def ring_doorbell():
+    return ring()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
