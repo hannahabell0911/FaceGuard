@@ -15,9 +15,21 @@ import json
 from gtts import gTTS
 import pygame
 import time
+from pubnub.pnconfiguration import PNConfiguration
+from pubnub.pubnub import PubNub
+import uuid
 
 pygame.mixer.init()
 load_dotenv()
+
+random_uuid = str(uuid.uuid4())
+pnconfig = PNConfiguration()
+pnconfig.uuid = random_uuid
+pnconfig.subscribe_key = os.getenv("PUBNUB_SUBSCRIBE_KEY")
+pnconfig.publish_key = os.getenv("PUBNUB_PUBLISH_KEY")
+pnconfig.ssl = True
+
+pubnub = PubNub(pnconfig)
 
 host = os.getenv("HOST")
 user = os.getenv("USER")
@@ -49,6 +61,9 @@ config = {
     
 ringButton = gpiozero.Button(17)
 camera = PiCamera()    
+
+def publish_message(channel, message):
+    pubnub.publish().channel(channel).message(message).sync()
 
 def facialRecognition(image):
     imageToCheck = face_recognition.load_image_file(image)
@@ -110,6 +125,8 @@ def ring():
         "timestamp": timestamp,
         "person": name
     }    
+    
+    publish_message("doorbell_channel", doorbellEvent)
     
     return jsonify(doorbellEvent)           
         
