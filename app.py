@@ -81,6 +81,16 @@ def facialRecognition(image):
                 match_found = True
                 return name
         if not match_found:
+            messageUnrecognized = f"Hello, I will be with you in a minute."
+            
+            tts = gTTS (text=messageUnrecognized, lang='en')
+            tts.save("unrecognized.mp3")
+            
+            pygame.mixer.music.load("unrecognized.mp3")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                time.sleep(1)
+                
             print(f'No match found for unknown face {i}')
             return "Unknown"
         
