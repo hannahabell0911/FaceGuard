@@ -141,97 +141,96 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
 }
 @Composable
 fun LiveFeedScreen() {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+            .padding(30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround // This will space the elements evenly
+        Text(
+            text = "John is at the door",
+            color = Color.White,
+            style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        Box(
+            modifier = Modifier
+                .size(280.dp) // Make the box square
+                .background(Color.Gray),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "John is at the door",
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge
+            // Replace this Text with an Image composable
+            Image(
+                painter = painterResource(id = R.drawable.faceguard_icon), // Replace with your actual image resource ID
+                contentDescription = "Live feed image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop // Adjust the scaling to fit your design
             )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f) // Make the box take up 1/3 of the space
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Live feed image placeholder", color = Color.White)
-            }
-
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Today", color = Color.White, style = MaterialTheme.typography.bodyLarge)
-                Text("Motion first detected at: 6.28 am", color = Color.White)
-                Text("Face detected: John Doe", color = Color.White)
-                Text("Relationship: Homeowner", color = Color.White)
-            }
         }
 
+        Spacer(modifier = Modifier.height(60.dp))
+
+        // Information about the detected motion
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Today", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Face detected: John Doe", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Relationship: Homeowner", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+        }
+
+        Spacer(modifier = Modifier.weight(1f)) // This pushes the chat box to the bottom
+
         // Chat message box at the bottom
-        ChatMessageBox(Modifier.align(Alignment.BottomCenter))
+        ChatMessageBox()
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatMessageBox(modifier: Modifier = Modifier) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .background(Color.DarkGray, shape = MaterialTheme.shapes.small)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Profile",
-            tint = Color.White
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        TextField(
-            value = "",
-            onValueChange = {},
-            placeholder = { Text("Message...") },
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.White,
-                cursorColor = Color.White,
-//                backgroundColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            modifier = Modifier.weight(1f)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        IconButton(onClick = { /* Handle send message */ }) {
-            Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = "Send Message",
-                tint = Color.White
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(Color.White, shape = MaterialTheme.shapes.small)
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+        ) {
+            TextField(
+                value = "",
+                onValueChange = {},
+                placeholder = { Text("Send message at the Door", color = Color.Gray) },
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.Black,
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    placeholderColor = Color.Gray
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.Transparent)
             )
-        }
 
-        IconButton(onClick = { /* Handle emoji */ }) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Send Emoji",
-                tint = Color.White
-            )
+            IconButton(onClick = { /* Handle emoji */ }) {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = "Send Emoji",
+                    tint = Color.Black
+                )
+            }
         }
     }
 }
