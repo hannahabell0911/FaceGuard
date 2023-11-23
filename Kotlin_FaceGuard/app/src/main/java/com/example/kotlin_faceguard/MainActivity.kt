@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
                     when (showScreen) {
                         Screen.Login -> LoginForm(
-
+                            onLoginSuccess = { showScreen = Screen.LiveFeed },
                             onSignUpClicked = { showScreen = Screen.Registration }
                         )
                         Screen.Registration -> RegistrationForm { showScreen = Screen.Login }
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun LoginForm(onSignUpClicked: () -> Unit) {
+fun LoginForm(onLoginSuccess: () -> Unit, onSignUpClicked: () -> Unit) {
     Column(
         Modifier
             .padding(24.dp)
@@ -69,7 +69,7 @@ fun LoginForm(onSignUpClicked: () -> Unit) {
         TextInput(InputType.Username)
         TextInput(InputType.Password)
 
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = onLoginSuccess, modifier = Modifier.fillMaxWidth()) {
             Text("Login", Modifier.padding(vertical = 8.dp))
         }
 
@@ -87,7 +87,6 @@ fun LoginForm(onSignUpClicked: () -> Unit) {
         }
     }
 }
-
 @Composable
 fun RegistrationForm(onLoginClicked: () -> Unit) {
     Column(
@@ -145,30 +144,37 @@ fun LiveFeedScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.SpaceBetween, // This will distribute the space evenly
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Hannah's home",
             color = Color.White,
-
+            style = MaterialTheme.typography.bodyLarge, // Increase the font size for "Hannah's home"
+            modifier = Modifier.align(Alignment.Start) // Align text to the start
         )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .background(Color.Gray) // Placeholder for the live feed image
+                .background(Color.Gray), // Placeholder for the live feed image
+            contentAlignment = Alignment.Center
         ) {
-            Text("Live feed image placeholder", Modifier.align(Alignment.Center), color = Color.White)
+            Text("Live feed image placeholder", color = Color.White)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Today", color = Color.White)
-        Text("Motion first detected at: 6.28 am", color = Color.White)
-        Text("Face detected: John Doe", color = Color.White)
-        Text("Relationship: Homeowner", color = Color.White)
+        Column( // Use a Column here to format details in a tabular manner
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text("Today", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+            Text("Motion first detected at: 6.28 am", color = Color.White)
+            Text("Face detected: John Smith ", color = Color.White)
+            Text("Relationship: Homeowner", color = Color.White)
+        }
     }
 }
+
 sealed class InputType(
     val label: String,
     val icon: ImageVector,
