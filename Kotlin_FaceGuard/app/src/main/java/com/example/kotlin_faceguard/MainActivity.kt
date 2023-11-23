@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.ui.layout.ContentScale
 
 
@@ -135,13 +136,36 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
     }
 }
 
-
 @Composable
-fun LiveFeedScreen()
-{
+fun LiveFeedScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        Text(
+            text = "Hannah's home",
+            color = Color.White,
 
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(Color.Gray) // Placeholder for the live feed image
+        ) {
+            Text("Live feed image placeholder", Modifier.align(Alignment.Center), color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Today", color = Color.White)
+        Text("Motion first detected at: 6.28 am", color = Color.White)
+        Text("Face detected: John Doe", color = Color.White)
+        Text("Relationship: Homeowner", color = Color.White)
+    }
 }
-
 sealed class InputType(
     val label: String,
     val icon: ImageVector,
