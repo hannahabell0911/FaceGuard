@@ -135,6 +135,13 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
     }
 }
 
+
+@Composable
+fun LiveFeedScreen()
+{
+
+}
+
 sealed class InputType(
     val label: String,
     val icon: ImageVector,
