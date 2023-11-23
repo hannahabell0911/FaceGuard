@@ -12,6 +12,11 @@ from mysql.connector import Error
 import os
 import numpy as np
 import json
+from gtts import gTTS
+import pygame
+import time
+
+pygame.mixer.init()
 
 host = os.getenv("HOST")
 user = os.getenv("USER")
@@ -62,7 +67,16 @@ def facialRecognition(image):
             results = face_recognition.compare_faces([known_encoding_array], unknown_encoding)
 
             if True in results:
-                print(f'Match found: {name} matches with unknown face {i}')
+                message = f"Face matches with {name}"
+                print(message)
+            
+                tts = gTTS(text=message, lang='en')
+                tts.save("match.mp3")
+            
+                pygame.mixer.music.load("match.mp3")
+                pygame.mixer.music.play()
+                while pygame.mixer.music.get_busy():
+                    time.sleep(1)
                 match_found = True
                 break
         if not match_found:
