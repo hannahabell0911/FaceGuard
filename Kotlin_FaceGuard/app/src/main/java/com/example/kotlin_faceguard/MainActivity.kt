@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
             Kotlin_FaceGuardTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Black
+                    color = Color.Gray
                 ) {
                     var showScreen by remember { mutableStateOf(Screen.Login) }
 
@@ -56,9 +56,9 @@ class MainActivity : ComponentActivity() {
 fun LoginForm(onLoginSuccess: () -> Unit, onSignUpClicked: () -> Unit) {
     Column(
         Modifier
-            .padding(24.dp)
+            .padding(30.dp)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.Bottom),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -148,7 +148,7 @@ fun LiveFeedScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "John is at the door",
+            text = "Mary is at the door",
             color = Color.White,
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.align(Alignment.Start)
@@ -162,25 +162,25 @@ fun LiveFeedScreen() {
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
-            // Replace this Text with an Image composable
+
             Image(
-                painter = painterResource(id = R.drawable.faceguard_icon), // Replace with your actual image resource ID
+                painter = painterResource(id = R.drawable.hannah),
                 contentDescription = "Live feed image",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop // Adjust the scaling to fit your design
+                contentScale = ContentScale.Crop
             )
         }
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // Information about the detected motion
+
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Today", color = Color.White, style = MaterialTheme.typography.headlineSmall)
             Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-            Text("Face detected: John Doe", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Face detected: Mary Smith", color = Color.White, style = MaterialTheme.typography.headlineSmall)
             Text("Relationship: Homeowner", color = Color.White, style = MaterialTheme.typography.headlineSmall)
         }
 
@@ -199,7 +199,7 @@ fun ChatMessageBox(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
