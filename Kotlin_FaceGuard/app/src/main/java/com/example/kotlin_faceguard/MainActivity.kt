@@ -132,7 +132,7 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Already have an Account?", color = Color.White)
+            Text("Already have an Account ?", color = Color.White)
             TextButton(onClick = onLoginClicked) {
                 Text("Login")
             }
