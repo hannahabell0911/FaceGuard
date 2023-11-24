@@ -29,4 +29,10 @@ def motionDetection():
             beep(4)  
         time.sleep(1)
 
+try:
+    motionDetection()
+except KeyboardInterrupt:
+    print("Quit")
+    GPIO.cleanup()
+
 motionDetection()
