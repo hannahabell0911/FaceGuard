@@ -39,3 +39,28 @@
 User Data Privacy has to be looked into with careful consideration , regulations like GDPR have to be prioritised . How this can bw achieved is implementing data minimization, and gathering only the data that nis essential to the project .
 
 https://www.fotoware.com/blog/5-things-you-should-know-about-gdpr-for-images
+
+.
+.
+.
+.
+
+System Components and Flow for Bidirectional Communication:
+Frontend Application (Client):
+
+The frontend application includes a message box where users can type messages.
+When a message is entered, the app sends the message data to the backend server over a secure HTTPS connection.
+Backend Server (Flask on AWS EC2):
+
+The Flask server receives the message data from the frontend app.
+It then processes and converts the text message to an audio format using a text-to-speech (TTS) service / pyttsx3 Library.
+The server sends the audio data to the Raspberry Pi using a secure and reliable messaging protocol.
+PubNub Integration:
+
+The server publishes the audio message to a PubNub channel that the Raspberry Pi is subscribed to.
+
+Raspberry Pi (IoT Device):
+
+The Raspberry Pi is continuously listening for incoming messages on the subscribed channel.
+Upon receiving a new message, the Raspberry Pi will trigger a script that outputs the audio message through the connected speaker.
+The Raspberry Pi can send back an acknowledgment message to the server, which then notifies the user that the message was successfully delivered and played.
