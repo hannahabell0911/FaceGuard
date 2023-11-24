@@ -1,4 +1,4 @@
-package com.example.faceguard
+package com.example.faceguardpages
 
 import org.junit.Test
 

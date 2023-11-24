@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Your UI components go here -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8CDBA9"
+        />
+    </RelativeLayout>

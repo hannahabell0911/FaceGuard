@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Faceguard"
+rootProject.name = "FaceGuardPages"
 include(":app")
  
