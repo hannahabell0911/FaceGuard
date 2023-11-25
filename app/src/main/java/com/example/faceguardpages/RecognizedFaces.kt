@@ -1,4 +1,3 @@
-
 package com.example.faceguardpages
 
 import android.os.Bundle
@@ -19,21 +18,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-class MainActivity : ComponentActivity() {
+class RecognizedFaces : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        setContentView(R.layout.activity_faces)
 
         val composeView = findViewById<ComposeView>(R.id.composeView)
 
         composeView.setContent {
-            HomeScreen()
+            FacesScreen()
         }
     }
-
     @Composable
-    fun HomeScreen() {
+    fun FacesScreen() {
         Surface(
             color = Color.Gray,
             modifier = Modifier.fillMaxSize()
@@ -50,5 +47,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
