@@ -1,7 +1,9 @@
 
 package com.example.faceguardpages
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -30,25 +32,37 @@ class MainActivity : ComponentActivity() {
         composeView.setContent {
             HomeScreen()
         }
+
+        val recognizedFacesIcon = findViewById<ImageView>(R.id.faces)
+
+        // Set an OnClickListener to handle icon click
+        recognizedFacesIcon.setOnClickListener {
+            // Create an Intent to start RecognizedFacesActivity
+            val intent = Intent(this, RecognizedFaces::class.java)
+
+            // Start the RecognizedFacesActivity
+            startActivity(intent)
+        }
     }
 
-    @Composable
-    fun HomeScreen() {
-        Surface(
-            color = Color.Gray,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+        @Composable
+        fun HomeScreen() {
+            Surface(
+                color = Color.Gray,
+                modifier = Modifier.fillMaxSize()
             ) {
-                // Add more Compose components as needed
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Add more Compose components as needed
+                }
             }
         }
     }
-}
+
 
 

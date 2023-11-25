@@ -1,6 +1,8 @@
 package com.example.faceguardpages
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -47,11 +49,22 @@ class RecognizedFaces : ComponentActivity() {
         composeView.setContent {
             FacesScreen()
         }
-        lifecycleScope.launch {
-            try {
-                val knownFaces = apiService.getKnownFaces()
-            } catch (e: Exception) {
-                // Handle errors
+        val recognizedFacesIcon = findViewById<ImageView>(R.id.home)
+
+        // Set an OnClickListener to handle icon click
+        recognizedFacesIcon.setOnClickListener {
+            // Create an Intent to start RecognizedFacesActivity
+            val intent = Intent(this, MainActivity::class.java)
+
+            // Start the RecognizedFacesActivity
+            startActivity(intent)
+
+            lifecycleScope.launch {
+                try {
+                    val knownFaces = apiService.getKnownFaces()
+                } catch (e: Exception) {
+                    // Handle errors
+                }
             }
         }
     }
