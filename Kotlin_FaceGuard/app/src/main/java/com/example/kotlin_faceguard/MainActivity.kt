@@ -8,11 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,22 +27,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Kotlin_FaceGuardTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.Gray
-                ) {
-                    var showScreen by remember { mutableStateOf(Screen.Login) }
-
-                    when (showScreen) {
-                        Screen.Login -> LoginForm(
-                            onLoginSuccess = { showScreen = Screen.LiveFeed },
-                            onSignUpClicked = { showScreen = Screen.Registration }
-                        )
-                        Screen.Registration -> RegistrationForm { showScreen = Screen.Login }
-                        Screen.LiveFeed -> LiveFeedScreen()
-                    }
-                }
+                // Main content goes here
+                MainScreen()
             }
+        }
+    }
+}
+
+@Composable
+
+fun MainScreen() {
+    var currentScreen by remember { mutableStateOf(Screen.Login) }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.Gray // Set the background color to grey here
+    ) {
+        when (currentScreen) {
+            Screen.Login -> LoginForm(
+                onLoginSuccess = { currentScreen = Screen.LiveFeed },
+                onSignUpClicked = { currentScreen = Screen.Registration }
+            )
+            Screen.Registration -> RegistrationForm { currentScreen = Screen.Login }
+            Screen.LiveFeed -> LiveFeedScreen { currentScreen = Screen.AddNewFace }
+            Screen.AddNewFace -> AddNewFace { currentScreen = Screen.LiveFeed }
         }
     }
 }
@@ -89,6 +92,7 @@ fun LoginForm(onLoginSuccess: () -> Unit, onSignUpClicked: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun RegistrationForm(onLoginClicked: () -> Unit) {
     Column(
@@ -105,23 +109,13 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
             contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.FirstName)
-
-        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Surname)
-
-        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Email)
-
-        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.Password)
-
-        Spacer(modifier = Modifier.height(16.dp))
         TextInput(InputType.ConfirmPassword)
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = onLoginClicked, modifier = Modifier.fillMaxWidth()) {
             Text("Register", Modifier.padding(vertical = 8.dp))
         }
 
@@ -132,7 +126,7 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Already have an Account ?", color = Color.White)
+            Text("Already have an Account?", color = Color.White)
             TextButton(onClick = onLoginClicked) {
                 Text("Login")
             }
@@ -140,9 +134,8 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
     }
 }
 
-
 @Composable
-fun LiveFeedScreen() {
+fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,7 +153,7 @@ fun LiveFeedScreen() {
                 style = MaterialTheme.typography.displaySmall
             )
 
-            Button(onClick = { /* TODO: Implement navigation to addnewface composable */ }) {
+            Button(onClick = onAddFaceClicked) {
                 Text("Add")
             }
         }
@@ -169,13 +162,12 @@ fun LiveFeedScreen() {
 
         Box(
             modifier = Modifier
-                .size(280.dp) // Make the box square
+                .size(280.dp)
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
-            // Replace 'R.drawable.hannah' with your actual drawable resource
             Image(
-                painter = painterResource(id = R.drawable.hannah),
+                painter = painterResource(id = R.drawable.hannah), // Replace with actual resource
                 contentDescription = "Live feed image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -194,17 +186,36 @@ fun LiveFeedScreen() {
             Text("Relationship: Homeowner", color = Color.White, style = MaterialTheme.typography.headlineSmall)
         }
 
-        Spacer(modifier = Modifier.weight(1f)) // This pushes the chat box to the bottom
+        Spacer(modifier = Modifier.weight(1f))
 
-        // Chat message box at the bottom
         ChatMessageBox()
     }
 }
 
 @Composable
-fun AddNewFace()
-{
+fun AddNewFace(onBackToLiveFeed: () -> Unit) {
 
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TextInput(inputType: InputType) {
+    var value by remember { mutableStateOf("") }
+    TextField(
+        value = value,
+        onValueChange = { value = it },
+        modifier = Modifier.fillMaxWidth(),
+        leadingIcon = { Icon(imageVector = inputType.icon, contentDescription = null) },
+        label = { Text(inputType.label) },
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White
+        ),
+        singleLine = true,
+        keyboardOptions = inputType.keyboardOptions,
+        visualTransformation = inputType.visualTransformation
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -238,17 +249,16 @@ fun ChatMessageBox(modifier: Modifier = Modifier) {
                     .background(Color.Transparent)
             )
 
-            IconButton(onClick = { /* Handle emoji */ }) {
+            IconButton(onClick = { /* Handle send */ }) {
                 Icon(
                     imageVector = Icons.Default.Send,
-                    contentDescription = "Send Emoji",
+                    contentDescription = "Send Message",
                     tint = Color.Black
                 )
             }
         }
     }
 }
-
 
 sealed class InputType(
     val label: String,
@@ -292,32 +302,18 @@ sealed class InputType(
         KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         VisualTransformation.None
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TextInput(inputType: InputType) {
-    var value by remember { mutableStateOf("") }
-    TextField(
-        value = value,
-        onValueChange = { value = it },
-        modifier = Modifier.fillMaxWidth(),
-        leadingIcon = { Icon(imageVector = inputType.icon, contentDescription = null) },
-        label = { Text(inputType.label) },
-        colors = TextFieldDefaults.textFieldColors(
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White
-        ),
-        singleLine = true,
-        keyboardOptions = inputType.keyboardOptions,
-        visualTransformation = inputType.visualTransformation
+    object relation : InputType(
+        "Relation",
+        Icons.Default.Person,
+        KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        VisualTransformation.None
     )
+
 }
-
-
 
 enum class Screen {
     Login,
     Registration,
-    LiveFeed
+    LiveFeed,
+    AddNewFace
 }
