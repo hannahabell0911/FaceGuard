@@ -11,33 +11,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.lifecycleScope
-import com.example.faceguardpages.Data.data
-import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 class RecognizedFaces : ComponentActivity() {
 
-    private val YAG = "RecognizedFacesActivity"
+    private val TAG = "RecognizedFacesActivity"
     private val retrofit = Retrofit.Builder()
         .baseUrl("http://www.faceguard.live/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -56,71 +47,55 @@ class RecognizedFaces : ComponentActivity() {
         }
 
         val recognizedFacesIcon = findViewById<ImageView>(R.id.home)
-
-        // Set an OnClickListener to handle icon click
         recognizedFacesIcon.setOnClickListener {
-            // Create an Intent to start RecognizedFacesActivity
             val intent = Intent(this, MainActivity::class.java)
-
-            // Start the RecognizedFacesActivity
             startActivity(intent)
-
-            lifecycleScope.launch {
-                try {
-                    val recognizedGuests = apiService.getRecognizedGuests()
-                } catch (e: Exception) {
-                    Log.e(YAG, "Error fetching recognized guests", e)
-                }
-            }
+            Log.d("sunucu", "Returning to MainActivity.")
         }
     }
 
     interface ApiService {
         @GET("/recognized_guests")
-        suspend fun getRecognizedGuests(): Response<data.RecognizedGuest>
+        suspend fun getRecognizedGuests(): Response<List<List<String>>>
     }
 
     @Composable
     fun FacesScreen(apiService: ApiService) {
         var recognizedGuests by remember { mutableStateOf<List<String>?>(null) }
 
-
         LaunchedEffect(Unit) {
             try {
-                // Uncomment the line below when you want to make the actual API call
+                Log.d("sunucu", "Attempting to fetch recognized guests.")
                 val response = apiService.getRecognizedGuests()
+                Log.d("sunucu", "Response received: ${response.raw()}")
 
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        recognizedGuests = body.names
-                        Log.d(YAG, "Received recognized guests: $recognizedGuests")
+                        recognizedGuests = body.flatten()
+                        Log.d("sunucu", "Received recognized guests: $recognizedGuests")
                     } else {
-                        Log.e(YAG, "Response body is null")
+                        Log.e("sunucu", "Response body is null")
                     }
                 } else {
-                    Log.e(YAG, "Unsuccessful response: ${response.code()}, ${response.message()}")
+                    Log.e("sunucu", "Unsuccessful response: ${response.code()}, ${response.message()}")
                 }
             } catch (e: Exception) {
-                // Handle errors
-                Log.e(YAG, "Error in LaunchedEffect", e)
+                Log.e("sunucu", "Error in LaunchedEffect", e)
             }
         }
 
-
-        // Rest of the code...
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Gray),  // Add a background color for debugging
+                .background(Color.Gray),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Recognized Guests:")
             recognizedGuests?.let { names ->
-                // Directly use the list of names in the Text composable
                 Text(names.joinToString(", "))
             }
         }
-        }
     }
+}
