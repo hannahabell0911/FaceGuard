@@ -107,6 +107,8 @@
         android:id="@+id/composeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/knownFacesText"
+        android:layout_above="@id/toolbar"
         android:layout_marginTop="16dp">
 
 
