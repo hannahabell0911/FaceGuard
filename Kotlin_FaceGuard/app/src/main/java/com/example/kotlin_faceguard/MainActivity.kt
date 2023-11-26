@@ -139,6 +139,8 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         }
     }
 }
+
+
 @Composable
 fun LiveFeedScreen() {
     Column(
@@ -199,6 +201,11 @@ fun LiveFeedScreen() {
     }
 }
 
+@Composable
+fun AddNewFace()
+{
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
