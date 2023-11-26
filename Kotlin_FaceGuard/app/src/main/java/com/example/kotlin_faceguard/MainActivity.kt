@@ -144,15 +144,24 @@ fun LiveFeedScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(30.dp)
     ) {
-        Text(
-            text = "Mary is at the door",
-            color = Color.White,
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.align(Alignment.Start)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Not Recognised",
+                color = Color.White,
+                style = MaterialTheme.typography.displaySmall
+            )
+
+            Button(onClick = { /* TODO: Implement navigation to addnewface composable */ }) {
+                Text("Add")
+            }
+        }
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -162,7 +171,7 @@ fun LiveFeedScreen() {
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
-
+            // Replace 'R.drawable.hannah' with your actual drawable resource
             Image(
                 painter = painterResource(id = R.drawable.hannah),
                 contentDescription = "Live feed image",
@@ -172,7 +181,6 @@ fun LiveFeedScreen() {
         }
 
         Spacer(modifier = Modifier.height(60.dp))
-
 
         Column(
             horizontalAlignment = Alignment.Start,
@@ -190,7 +198,6 @@ fun LiveFeedScreen() {
         ChatMessageBox()
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
