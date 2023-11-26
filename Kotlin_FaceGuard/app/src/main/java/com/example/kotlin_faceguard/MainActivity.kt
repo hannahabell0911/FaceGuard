@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -94,6 +95,7 @@ fun LoginForm(onLoginSuccess: () -> Unit, onSignUpClicked: () -> Unit) {
 }
 
 @Composable
+
 fun RegistrationForm(onLoginClicked: () -> Unit) {
     Column(
         Modifier
@@ -115,14 +117,20 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         TextInput(InputType.Password)
         TextInput(InputType.ConfirmPassword)
 
+        // Additional Spacer for pushing the button down
+        Spacer(modifier = Modifier.height(24.dp))
+
         Button(onClick = onLoginClicked, modifier = Modifier.fillMaxWidth()) {
             Text("Register", Modifier.padding(vertical = 8.dp))
         }
 
+        // Pushing the divider further down
+        Spacer(modifier = Modifier.height(48.dp))
+
         Divider(
             color = Color.White,
             thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 48.dp)
+            modifier = Modifier.padding(vertical = 16.dp) // Adjust padding as needed
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -148,13 +156,17 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Not Recognised",
+                text = "Unknown",
                 color = Color.White,
                 style = MaterialTheme.typography.displaySmall
             )
 
             Button(onClick = onAddFaceClicked) {
-                Text("Add")
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add",
+                    tint = Color.White // Icon color
+                )
             }
         }
 
@@ -166,8 +178,9 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
+            // Replace 'R.drawable.hannah' with your actual drawable resource
             Image(
-                painter = painterResource(id = R.drawable.hannah), // Replace with actual resource
+                painter = painterResource(id = R.drawable.hannah),
                 contentDescription = "Live feed image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -182,18 +195,66 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
         ) {
             Text("Today", color = Color.White, style = MaterialTheme.typography.headlineSmall)
             Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-            Text("Face detected: Mary Smith", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-            Text("Relationship: Homeowner", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.headlineSmall)
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // Implementation of ChatMessageBox
+        // Note: Replace this with your actual ChatMessageBox implementation
         ChatMessageBox()
     }
 }
-
 @Composable
 fun AddNewFace(onBackToLiveFeed: () -> Unit) {
+    Column(
+        Modifier
+            .padding(24.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Heading
+        Text(
+            text = "Add Face",
+            style = MaterialTheme.typography.displaySmall,
+            color = Color.White, // Change color as needed
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        // Add padding below the heading
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.hannah),
+            contentDescription = "Logo",
+            modifier = Modifier.size(300.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        // Add padding below the image
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextInput(InputType.FirstName)
+
+        // Add padding between text fields
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextInput(InputType.Surname)
+
+        // Add padding between text fields
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextInput(InputType.FirstName)
+
+        // Add padding between the last text field and the button
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onBackToLiveFeed, modifier = Modifier.fillMaxWidth()) {
+            Text("Add", Modifier.padding(vertical = 8.dp), color = Color.Black)
+        }
+
+    }
 
 }
 
@@ -202,21 +263,30 @@ fun AddNewFace(onBackToLiveFeed: () -> Unit) {
 @Composable
 fun TextInput(inputType: InputType) {
     var value by remember { mutableStateOf("") }
+
     TextField(
         value = value,
         onValueChange = { value = it },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp), // Added padding for spacing between text fields
         leadingIcon = { Icon(imageVector = inputType.icon, contentDescription = null) },
         label = { Text(inputType.label) },
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White
+            unfocusedIndicatorColor = Color.White,
+            containerColor = Color.Transparent, // You can adjust this color for a different background
+            textColor = Color.Black, // Text color
+            focusedLabelColor = Color.White, // Label color when focused
+            unfocusedLabelColor = Color.White // Label color when unfocused
         ),
         singleLine = true,
         keyboardOptions = inputType.keyboardOptions,
-        visualTransformation = inputType.visualTransformation
+        visualTransformation = inputType.visualTransformation,
+        shape = RoundedCornerShape(16.dp) // Set the shape to be more rounded
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
