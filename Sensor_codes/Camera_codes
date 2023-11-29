@@ -35,3 +35,41 @@ inside the folder , installed the text to speech library using which pyttsx libr
    aplay /usr/share/sounds/alsa/Front_Center.wav
 
 10. Code for the camera_speaker.py
+
+import cv2
+import time
+import pyttsx3
+from datetime import datetime
+
+def speak(text):
+engine = pyttsx3.init()
+rate = engine.getProperty('rate')  
+ engine.setProperty('rate', rate - 40)  
+ engine.say(text)
+engine.runAndWait()
+
+def take*picture():
+filename = 'captured_image*{}.jpg'.format(datetime.now().strftime("%Y%m%d\_%H%M%S"))
+cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+
+
+    time.sleep(3)
+
+    ret, frame = cap.read()
+    if not ret:
+        print("Can't receive frame (stream end?). Exiting ...")
+        return
+
+
+    cv2.imwrite(filename, frame)
+
+    cap.release()
+
+print("Stand in front of the camera.")
+speak("Please stand in front of the camera for 3 seconds.")
+take_picture()
+print("Picture taken!")
