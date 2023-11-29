@@ -26,13 +26,14 @@ to go to this folder
 
 inside the folder , installed the text to speech library using which pyttsx library
 
-6. pip install pyttsx3
-7. sudo apt-get install espeak
+6.  ## pip install pyttsx3
+7.  ## sudo apt-get install espeak
 
-8. Connect to the speaker via bluetooth , might need a dew imports as well
+8.  Connect to the speaker via bluetooth , might need a dew imports as well
 
-9. test your speaker using this command
-   aplay /usr/share/sounds/alsa/Front_Center.wav
+9.  test your speaker using this command
+
+## aplay /usr/share/sounds/alsa/Front_Center.wav
 
 10. Code for the camera_speaker.py
 
