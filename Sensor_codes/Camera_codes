@@ -1,0 +1,37 @@
+Due to the Picam not working , we have decieded to go with our USB camera for this project
+
+The USB camera we have in this case is an HP webcam
+
+To Set this UP for our project we require some initial setup
+
+1. lsusb
+   This checks if their is your USB connected
+2. sudo apt fswebcam
+3. fswebcam -r 1280x720 --no-banner /path/to/save/image.jpg (capuresimage)
+4. pip3 install opencv-python
+
+Now tha we have our USB cam setup we can INstall OPENCV Python Library
+
+5. pip3 install opencv-python
+
+now create a file whose name is cat capture.py
+
+After creating the file we code it so that it takes the photo of the person in front of him
+
+**_Create an Virtual Environment ENV inside the folder Projects _**
+
+to go to this folder
+**_virtualenv env_**
+**_source env/bin/activate_**
+
+inside the folder , installed the text to speech library using which pyttsx library
+
+6. pip install pyttsx3
+7. sudo apt-get install espeak
+
+8. Connect to the speaker via bluetooth , might need a dew imports as well
+
+9. test your speaker using this command
+   aplay /usr/share/sounds/alsa/Front_Center.wav
+
+10. Code for the camera_speaker.py
