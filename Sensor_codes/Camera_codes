@@ -36,16 +36,45 @@ inside the folder , installed the text to speech library using which pyttsx libr
 
 10. Code for the camera_speaker.py
 
+11. After the camera and speaker are done , its time for Making the PIR Sensor a trigger for the following activity
+    Connected the PIR Sensor with the following GPIO pins
+
+    ## GPIO pin 2 for Power
+
+    ## GPIO pin 6 for ground
+
+    ## GPIO pin 11 for the third pin
+
+    All the pins are connected via female to female jumper wires
+
+12. import RPi.GPIO  
+     for me i wasnt installing through sudo , so I just used pip
+
+    ## pip install RPi.GPIO
+
+13. Go inito the python3 from the bash and then do th following command
+
+    ## import RPi.GPIO
+
+14. After that modify the code to add in the PIR Sensor with the following
+
+import RPi.GPIO as GPIO
 import cv2
 import time
 import pyttsx3
 from datetime import datetime
 
+# GPIO setup
+
+PIR_PIN = 17 # GPIO pin number (BCM)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR_PIN, GPIO.IN)
+
 def speak(text):
 engine = pyttsx3.init()
-rate = engine.getProperty('rate')  
- engine.setProperty('rate', rate - 40)  
- engine.say(text)
+rate = engine.getProperty('rate')
+engine.setProperty('rate', rate - 50)
+engine.say(text)
 engine.runAndWait()
 
 def take*picture():
@@ -56,20 +85,27 @@ cap = cv2.VideoCapture(0)
         print("Cannot open camera")
         exit()
 
-
-    time.sleep(3)
-
+    time.sleep(3)  # Wait for 3 seconds
     ret, frame = cap.read()
+
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
         return
 
-
     cv2.imwrite(filename, frame)
-
     cap.release()
 
-print("Stand in front of the camera.")
+def main():
+try:
+while True:
+if GPIO.input(PIR_PIN):
+print("Motion detected!")
 speak("Please stand in front of the camera for 3 seconds.")
 take_picture()
 print("Picture taken!")
+time.sleep(5) # cooldown period to avoid multiple triggers
+except KeyboardInterrupt:
+GPIO.cleanup()
+
+if **name** == "**main**":
+main()
