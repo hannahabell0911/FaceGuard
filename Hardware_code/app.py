@@ -26,6 +26,13 @@ def beep(repeat):
             time.sleep(0.001)
         time.sleep(0.02)
 
+def speak(text):
+    engine = pyttsx3.init()
+    rate = engine.getProperty('rate')
+    engine.setProperty('rate', rate - 50)
+    engine.say(text)
+    engine.runAndWait()
+
 def capture_photo():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"/home/tiao/Desktop/images/MotionImage_{timestamp}.jpg"
@@ -37,10 +44,13 @@ def capture_photo():
 def motionDetection():
     while True:
         if GPIO.input(PIR_pin):
-            print("Motion detected")
+            print("Motion Dectected")
+            speak("Motion detected")
             GPIO.output(Led_pin, True)
             beep(4)  
             capture_photo()
+            print("Picture Taken")
+            speak("Picture Taken")
             GPIO.output(Led_pin, False)
         time.sleep(1)
 
