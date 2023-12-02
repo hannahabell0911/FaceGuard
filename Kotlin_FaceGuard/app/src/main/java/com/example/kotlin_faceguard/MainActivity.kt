@@ -86,7 +86,7 @@ fun LoginForm(onLoginSuccess: () -> Unit, onSignUpClicked: () -> Unit) {
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Don't have an Account yet?", color = Color.White)
+            Text("Don't have an account yet?", color = Color.White)
             TextButton(onClick = onSignUpClicked) {
                 Text("Sign Up")
             }
