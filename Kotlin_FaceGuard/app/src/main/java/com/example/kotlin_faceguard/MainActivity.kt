@@ -31,6 +31,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+
+import androidx.compose.ui.unit.dp
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,7 +160,7 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
     }
 }
 
-val CustomGray = Color(0xFF85A7B4) // Custom gray color
+val CustomGray = Color(rgb(205, 205, 205)) // Custom gray color
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
@@ -165,7 +170,7 @@ fun HomePage() {
         topBar = {
             TopAppBar(
                 title = { Text("GOJI's SMART", color = Color.Black) },
-                // Other parameters...
+                modifier = Modifier.background(Color.Gray), // Set background color here
             )
         },
         content = {
@@ -179,7 +184,7 @@ fun HomePage() {
 
                 // Image in the center
                 Image(
-                    painter = painterResource(id = R.drawable.newimage), // Replace with your image resource
+                    painter = painterResource(id = R.drawable.photo_output), // Replace with your image resource
                     contentDescription = "Center Image",
                     modifier = Modifier
                         .fillMaxWidth()
