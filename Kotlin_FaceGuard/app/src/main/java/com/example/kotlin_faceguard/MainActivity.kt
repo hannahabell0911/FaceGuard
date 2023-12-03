@@ -1,15 +1,22 @@
 package com.example.kotlin_faceguard
 
+import android.annotation.SuppressLint
+import android.graphics.Color.rgb
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,9 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,8 +44,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
 
+
+
+@Composable
 fun MainScreen() {
     var currentScreen by remember { mutableStateOf(Screen.Login) }
     Surface(
@@ -45,15 +56,17 @@ fun MainScreen() {
     ) {
         when (currentScreen) {
             Screen.Login -> LoginForm(
-                onLoginSuccess = { currentScreen = Screen.LiveFeed },
+                onLoginSuccess = { currentScreen = Screen.HomePage },
                 onSignUpClicked = { currentScreen = Screen.Registration }
             )
             Screen.Registration -> RegistrationForm { currentScreen = Screen.Login }
-            Screen.LiveFeed -> LiveFeedScreen { currentScreen = Screen.AddNewFace }
-            Screen.AddNewFace -> AddNewFace { currentScreen = Screen.LiveFeed }
+            Screen.HomePage -> HomePage() // Navigate to HomePage after login
+            // Other cases...
+            else -> {}
         }
     }
 }
+
 
 
 @Composable
@@ -141,6 +154,88 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         }
     }
 }
+
+val CustomGray = Color(0xFF85A7B4) // Custom gray color
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
+@Composable
+fun HomePage() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("GOJI's SMART", color = Color.Black) },
+                // Other parameters...
+            )
+        },
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(CustomGray)
+                    .padding(30.dp)
+            ) {
+                // Existing content...
+
+                // Image in the center
+                Image(
+                    painter = painterResource(id = R.drawable.newimage), // Replace with your image resource
+                    contentDescription = "Center Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(40.dp)
+                        .height(350.dp) // Adjust size as needed
+                        .align(Alignment.CenterHorizontally),
+                    contentScale = ContentScale.Crop // Or ContentScale.Fit as needed
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Bottom half with two square-shaped cards
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    FeatureCard(title = "View Live Feed", icon = Icons.Default.Warning)
+                    FeatureCard(title = "Known Faces", icon = Icons.Default.Face)
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun FeatureCard(title: String, icon: ImageVector) {
+    val cardSize = 150.dp // Adjust the size as needed
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .size(cardSize)
+            .aspectRatio(1f),
+//        elevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = title,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = title, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+
 
 @Composable
 fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
@@ -381,9 +476,11 @@ sealed class InputType(
 
 }
 
+
 enum class Screen {
     Login,
     Registration,
+    HomePage,
     LiveFeed,
     AddNewFace
 }
