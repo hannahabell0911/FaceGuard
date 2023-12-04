@@ -5,18 +5,14 @@ import android.graphics.Color.rgb
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,12 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 
 class MainActivity : ComponentActivity() {
@@ -166,60 +162,70 @@ val CustomGray = Color(rgb(205, 205, 205)) // Custom gray color
 
 @Composable
 fun HomePage() {
+    var currentScreen by remember { mutableStateOf("home") }
+
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("GOJI's SMART", color = Color.Black) },
-                modifier = Modifier.background(Color.Gray), // Set background color here
-            )
-        },
+
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(CustomGray)
-                    .padding(30.dp)
-            ) {
-                // Existing content...
+            when (currentScreen) {
+                "home" -> HomeContent(
+                    onLiveFeedClicked = { currentScreen = "liveFeed" }
+                ) { currentScreen = "addNewFace" }
 
-                // Image in the center
-                Image(
-                    painter = painterResource(id = R.drawable.photo_output), // Replace with your image resource
-                    contentDescription = "Center Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(40.dp)
-                        .height(350.dp) // Adjust size as needed
-                        .align(Alignment.CenterHorizontally),
-                    contentScale = ContentScale.Crop // Or ContentScale.Fit as needed
+                "liveFeed" -> LiveFeedScreen(
+                    onAddFaceClicked = { currentScreen = "addNewFace" }
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Bottom half with two square-shaped cards
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    FeatureCard(title = "View Live Feed", icon = Icons.Default.Warning)
-                    FeatureCard(title = "Known Faces", icon = Icons.Default.Face)
-                }
+                "addNewFace" -> AddNewFace()
+                // Add other cases as necessary
             }
         }
     )
 }
 
+
 @Composable
-fun FeatureCard(title: String, icon: ImageVector) {
-    val cardSize = 150.dp // Adjust the size as needed
+fun HomeContent(onLiveFeedClicked: () -> Unit, AddNewFace: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomGray)
+            .padding(30.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.photo_output),
+            contentDescription = "Center Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(40.dp)
+                .height(350.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            FeatureCard(title = "View Live Feed", icon = Icons.Default.Warning, onClick = onLiveFeedClicked)
+            FeatureCard(title = "Known Faces", icon = Icons.Default.Face) {
+                // Implement action for Known Faces
+            }
+        }
+    }
+}
+
+@Composable
+fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
+    val cardSize = 150.dp
     Card(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .size(cardSize)
-            .aspectRatio(1f),
-//        elevation = 4.dp
+            .aspectRatio(1f)
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier
@@ -241,52 +247,55 @@ fun FeatureCard(title: String, icon: ImageVector) {
 }
 
 
-
 @Composable
 fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.Gray) // Set the background color to gray
             .padding(30.dp)
     ) {
+        Spacer(modifier = Modifier.height(50.dp)) // Adjust the height to lower the position of the text and button
+
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Unknown",
-                color = Color.White,
-                style = MaterialTheme.typography.displaySmall
-            )
+        ) {Text(
+            text = "Unknown",
+            color = Color.White,
+            style = TextStyle(fontSize = 40.sp), // Increased font size
+            modifier = Modifier.weight(4f)
+        )
 
-            Button(onClick = onAddFaceClicked) {
+            Button(
+                onClick = onAddFaceClicked,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Add",
-                    tint = Color.White // Icon color
+                    tint = Color.White
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Box(
             modifier = Modifier
-                .size(280.dp)
-                .background(Color.Gray),
+                .height(250.dp) // Adjust the height as needed
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            // Replace 'R.drawable.hannah' with your actual drawable resource
             Image(
-                painter = painterResource(id = R.drawable.hannah),
+                painter = painterResource(id = R.drawable.hannah), // Replace with your actual drawable resource
                 contentDescription = "Live feed image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
-
         Spacer(modifier = Modifier.height(60.dp))
 
         Column(
@@ -301,64 +310,58 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Implementation of ChatMessageBox
-        // Note: Replace this with your actual ChatMessageBox implementation
+
         ChatMessageBox()
     }
 }
 @Composable
-fun AddNewFace(onBackToLiveFeed: () -> Unit) {
+fun AddNewFace() {
     Column(
         Modifier
-            .padding(24.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+            .fillMaxSize()
+            .background(Color.Gray) // Set background color to gray
+            .padding(horizontal = 12.dp), // Added horizontal padding
+        verticalArrangement = Arrangement.Top, // Changed to Top for pulling contents upward
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Heading
+        Spacer(modifier = Modifier.height(12.dp)) // Increased height for upper spacing
+
         Text(
             text = "Add Face",
             style = MaterialTheme.typography.displaySmall,
-            color = Color.White, // Change color as needed
+            color = Color.White,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        // Add padding below the heading
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.hannah),
+            painter = painterResource(id = R.drawable.hannah), // Replace with the actual image resource
             contentDescription = "Logo",
             modifier = Modifier.size(300.dp),
             contentScale = ContentScale.Fit
         )
 
-        // Add padding below the image
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         TextInput(InputType.FirstName)
-
-        // Add padding between text fields
-        Spacer(modifier = Modifier.height(16.dp))
-
+        Spacer(modifier = Modifier.height(8.dp))
         TextInput(InputType.Surname)
+        Spacer(modifier = Modifier.height(8.dp))
+        TextInput(InputType.relation)
 
-        // Add padding between text fields
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(30.dp)) // Additional spacer for spacing before the button
 
-        TextInput(InputType.FirstName)
-
-        // Add padding between the last text field and the button
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onBackToLiveFeed, modifier = Modifier.fillMaxWidth()) {
-            Text("Add", Modifier.padding(vertical = 8.dp), color = Color.Black)
+        Button(
+            onClick = { /* Implement add face logic */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add Face", Modifier.padding(10.dp))
         }
 
+        Spacer(modifier = Modifier.height(30.dp)) // Additional bottom spacer for navigation space
     }
-
 }
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInput(inputType: InputType) {
