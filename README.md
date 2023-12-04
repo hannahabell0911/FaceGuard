@@ -1,8 +1,7 @@
 # FaceGuard: Backend 📷🔒
-![Logo](https://i.ibb.co/NYrGB0V/Faceguard-1-1.png)
+![Faceguard (1)-1](https://github.com/hannahabell0911/FaceGuard/assets/96305332/46f54c84-0aa2-4b89-9145-766ed91190d9)
 
     
-
 FaceGuard is a smart doorbell system that lets it's users customize the way they interact with their guests. FaceGuard's open sourced backend code can be found on this GitHub. 
 ## Features ✨
 
