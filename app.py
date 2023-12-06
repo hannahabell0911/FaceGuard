@@ -1,3 +1,5 @@
+# ChatGPT and Github Copilot were used as resources for this file.
+
 from flask import Flask, send_file, jsonify
 from camera import capture_image
 import gpiozero
@@ -61,6 +63,7 @@ config = {
     
 ringButton = gpiozero.Button(17)
 camera = PiCamera()    
+pir = gpiozero.MotionSensor(4)
 
 def publish_message(channel, message):
     pubnub.publish().channel(channel).message(message).sync()
@@ -140,7 +143,16 @@ def ring():
     connect1.close()
     return jsonify(doorbellEvent)           
         
-ringButton.when_pressed = ring
+def motion_detection():
+    print("Motion detected!")
+    time.sleep(2) # wait 2 secs to make sure its not a false positive
+    
+    if pir.motion_detected:
+        ring()
+ 
+# button is now disabled as hardware is not available at the moment       
+# comment out motion_detection() and uncomment ring() to use button instead of pir sensor
+#ringButton.when_pressed = ring
     
 app = Flask(__name__)
     
@@ -151,6 +163,8 @@ def hello_world():
 @app.route('/ring', methods=['GET'])
 def ring_doorbell():
     return ring()
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
