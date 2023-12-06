@@ -31,6 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
 
 
 class MainActivity : ComponentActivity() {
@@ -45,28 +47,63 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+enum class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
+    Home("home", Icons.Filled.Home, "Home"),
+    LiveFeed("liveFeed", Icons.Filled.PlayArrow, "Live Feed"),
+    AddNewFace("addNewFace", Icons.Filled.Add, "Add New Face")
+    // Add other navigation items if needed
+}
 
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     var currentScreen by remember { mutableStateOf(Screen.Login) }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.Gray // Set the background color to grey here
+
+    Scaffold(
+//        bottomBar = {
+//            if (currentScreen != Screen.Login && currentScreen != Screen.Registration) {
+//                BottomNavigationBar(currentScreen) { screen ->
+//                    currentScreen = screen
+//                }
+//            }
+//        }
     ) {
-        when (currentScreen) {
-            Screen.Login -> LoginForm(
-                onLoginSuccess = { currentScreen = Screen.HomePage },
-                onSignUpClicked = { currentScreen = Screen.Registration }
-            )
-            Screen.Registration -> RegistrationForm { currentScreen = Screen.Login }
-            Screen.HomePage -> HomePage() // Navigate to HomePage after login
-            // Other cases...
-            else -> {}
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.Gray
+        ) {
+            when (currentScreen) {
+                Screen.Login -> LoginForm(
+                    onLoginSuccess = { currentScreen = Screen.HomePage },
+                    onSignUpClicked = { currentScreen = Screen.Registration }
+                )
+                Screen.Registration -> RegistrationForm { currentScreen = Screen.Login }
+                Screen.HomePage -> HomeScreen()
+                Screen.LiveFeed -> LiveFeedScreen()
+                Screen.AddNewFace -> AddNewFace()
+                // Other cases as necessary
+            }
         }
     }
 }
+
+
+//@Composable
+//fun BottomNavigationBar(currentScreen: Screen, onItemSelected: (Screen) -> Unit) {
+//    BottomNavigation {
+//        BottomNavItem.values().forEach { item ->
+//            BottomNavigationItem(
+//                icon = { Icon(item.icon, contentDescription = null) },
+//                label = { Text(item.label) },
+//                selected = currentScreen.name == item.route,
+//                onClick = { onItemSelected(Screen.valueOf(item.route)) }
+//            )
+//        }
+//    }
+//}
+
 
 
 
@@ -156,66 +193,80 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
     }
 }
 
-val CustomGray = Color(rgb(205, 205, 205)) // Custom gray color
+val CustomGray = Color(rgb(136, 136, 136)) // Custom gray color
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
 @Composable
-fun HomePage() {
+fun HomeScreen() {
     var currentScreen by remember { mutableStateOf("home") }
 
     Scaffold(
-
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "John's Home",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.displaySmall// Custom typography
+                    )
+                },
+//                backgroundColor = MaterialTheme.colors.primary, // Use theme's primary color
+                actions = {
+                    // Add an action icon if necessary
+                    IconButton(onClick = { /* Handle action */ }) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+                    }
+                }
+            )
+        },
         content = {
             when (currentScreen) {
-                "home" -> HomeContent(
-                    onLiveFeedClicked = { currentScreen = "liveFeed" }
-                ) { currentScreen = "addNewFace" }
+                "home" -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(CustomGray)
+                            .padding(40.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.photooutputbgchange__1_),
+                            contentDescription = "Center Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(50.dp)
+                                .height(300.dp),
+                            contentScale = ContentScale.Crop
+                        )
 
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            FeatureCard(title = "View Live Feed", icon = Icons.Default.Warning, onClick = { currentScreen = "liveFeed" })
+                            FeatureCard(title = "Known Faces", icon = Icons.Default.Face) {
+
+                            }
+
+                        }
+                    }
+                }
                 "liveFeed" -> LiveFeedScreen(
                     onAddFaceClicked = { currentScreen = "addNewFace" }
                 )
                 "addNewFace" -> AddNewFace()
-                // Add other cases as necessary
+
             }
         }
     )
 }
 
 
-@Composable
-fun HomeContent(onLiveFeedClicked: () -> Unit, AddNewFace: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CustomGray)
-            .padding(30.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.photo_output),
-            contentDescription = "Center Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(40.dp)
-                .height(350.dp),
-            contentScale = ContentScale.Crop
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            FeatureCard(title = "View Live Feed", icon = Icons.Default.Warning, onClick = onLiveFeedClicked)
-            FeatureCard(title = "Known Faces", icon = Icons.Default.Face) {
-                // Implement action for Known Faces
-            }
-        }
-    }
-}
 
 @Composable
 fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
