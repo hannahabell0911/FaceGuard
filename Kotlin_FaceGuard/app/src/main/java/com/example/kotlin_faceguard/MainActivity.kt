@@ -81,7 +81,7 @@ fun MainScreen() {
                 )
                 Screen.Registration -> RegistrationForm { currentScreen = Screen.Login }
                 Screen.HomePage -> HomeScreen()
-                Screen.LiveFeed -> LiveFeedScreen()
+//                Screen.LiveFeed -> LiveFeedScreen()
                 Screen.AddNewFace -> AddNewFace()
                 // Other cases as necessary
             }
