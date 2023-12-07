@@ -37,6 +37,11 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import kotlinx.coroutines.launch
+import androidx.compose.material.rememberDrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ModalDrawer
+import androidx.compose.runtime.rememberCoroutineScope
 
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +56,49 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun SettingsScreen() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(onClose = { scope.launch { drawerState.close() } })
+        },
+        content = {
+            SettingsContent(onOpenDrawer = { scope.launch { drawerState.open() } })
+        }
+    )
+}
+
+@Composable
+fun DrawerContent(onClose: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        IconButton(onClick = onClose) {
+            Icon(Icons.Filled.Close, contentDescription = "Close Drawer")
+        }
+        Spacer(Modifier.height(16.dp))
+        Text("About Us", fontWeight = FontWeight.Bold)
+        Text("Theme", fontWeight = FontWeight.Bold)
+        Text("Logout", fontWeight = FontWeight.Bold)
+        Text("Help", fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun SettingsContent(onOpenDrawer: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Button(onClick = onOpenDrawer) {
+            Text("Open Settings")
+        }
+    }
+}
+
 
 
 sealed class NavScreen(val route: String) {
@@ -198,12 +246,6 @@ data class HistoryItem(
 
 
 
-
-@Composable
-fun SettingsScreen() {
-    // Implement the UI for the settings screen
-    Text(text = "Settings Screen")
-}
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
