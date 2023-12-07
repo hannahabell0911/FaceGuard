@@ -74,6 +74,53 @@ fun HistoryScreen() {
         }
     }
 }
+@Composable
+fun HistoryCard(historyItem: HistoryItem) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Circular image using the image resource ID from historyItem
+            Image(
+                painter = painterResource(id = historyItem.imageResId),
+                contentDescription = "Photo",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+
+            // Middle content (Name and Known/Unknown label)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp)
+            ) {
+                Text(text = historyItem.name, fontWeight = FontWeight.Bold)
+                Text(text = if (historyItem.isKnown) "Known" else "Unknown")
+            }
+
+            // Date and time
+            Text(text = historyItem.dateTime, textAlign = TextAlign.End)
+        }
+    }
+}
+
+
+data class HistoryItem(
+    val name: String,
+    val dateTime: String,
+    val isKnown: Boolean,
+    val imageResId: Int
+)
+
 
 
 
