@@ -59,28 +59,101 @@ sealed class NavScreen(val route: String) {
     object Settings : NavScreen("Settings")
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HistoryScreen() {
-    // Sample data with different image resource IDs
+    var filterOption by remember { mutableStateOf("Today") }
     val historyItems = listOf(
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.house),
-        HistoryItem("Jane Smith", "Dec 1, 2023, 09:30 AM", false, R.drawable.john_image_),
-        // Add more items with different images...
-    )
+        HistoryItem("John Doe", "Dec 2, 2023, 9:00 AM", true, R.drawable.hannah),
+        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.john_image_),
+        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.hannah),
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.john_image_),
+        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.newimage),
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
+        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.john_image_),
+        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.photo_output),
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.john_image_),
+        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.newimage),
 
-    LazyColumn {
-        items(historyItems) { item ->
-            HistoryCard(item)
+
+    )
+    val filteredItems = when (filterOption) {
+        "Today" -> historyItems.filter { it.dateTime.isToday() }
+        "Yesterday" -> historyItems.filter { it.dateTime.isYesterday() }
+        "Last Week" -> historyItems.filter { it.dateTime.isLastWeek() }
+        else -> historyItems
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("FaceGuard", color = Color.Black, style = MaterialTheme.typography.h4) },
+                backgroundColor = Customtop
+            )
+        },
+        backgroundColor = CustomGray // bg color
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("History", style = MaterialTheme.typography.h5, fontWeight = FontWeight.Bold)
+                DropdownMenuExample(filterOption) { selectedOption ->
+                    filterOption = selectedOption
+                }
+            }
+            LazyColumn {
+                items(filteredItems) { item ->
+                    HistoryCard(item)
+                }
+            }
         }
     }
 }
+
+@Composable
+fun DropdownMenuExample(selectedOption: String, onOptionSelected: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val options = listOf("Today", "Yesterday", "Last Week")
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        Text(selectedOption, modifier = Modifier.clickable { expanded = true })
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(onClick = {
+                    expanded = false
+                    onOptionSelected(option)
+                }) {
+                    Text(option)
+                }
+            }
+        }
+    }
+}
+
+// Dummy extension functions for date checks, replace with your actual logic
+fun String.isToday(): Boolean = this.contains("Dec 2, 2023") // Replace with actual logic
+fun String.isYesterday(): Boolean = this.contains("Nov 30, 2023") // Replace with actual logic
+fun String.isLastWeek(): Boolean = this.contains("Nov") // Replace with actual logic
+
+
 @Composable
 fun HistoryCard(historyItem: HistoryItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
+        shape = RoundedCornerShape(12.dp) // Rounded corners
     ) {
         Row(
             modifier = Modifier
@@ -88,7 +161,7 @@ fun HistoryCard(historyItem: HistoryItem) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Circular image using the image resource ID from historyItem
+            // Circular image
             Image(
                 painter = painterResource(id = historyItem.imageResId),
                 contentDescription = "Photo",
