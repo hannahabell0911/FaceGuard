@@ -54,8 +54,9 @@ class MainActivity : ComponentActivity() {
 
 
 sealed class NavScreen(val route: String) {
-    object Home : NavScreen("Home")
     object History : NavScreen("History")
+    object Home : NavScreen("Home")
+
     object Settings : NavScreen("Settings")
 }
 
@@ -208,23 +209,51 @@ fun SettingsScreen() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
-    var currentScreen by remember { mutableStateOf<NavScreen>(NavScreen.Home) }
+    var currentNavScreen by remember { mutableStateOf<NavScreen?>(null) }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(currentScreen) { screen ->
-                currentScreen = screen
+    if (currentNavScreen != null) {
+        // Navigation Screens (History, Home, Settings)
+        Scaffold(
+            bottomBar = {
+                currentNavScreen?.let {
+                    BottomNavigationBar(it) { screen ->
+                        currentNavScreen = screen
+                    }
+                }
+            }
+        ) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = Color.Gray
+            ) {
+                when (currentNavScreen) {
+                    NavScreen.Home -> HomeScreen()
+                    NavScreen.History -> HistoryScreen()
+                    NavScreen.Settings -> SettingsScreen()
+                    else -> {}
+                }
             }
         }
-    ) {
+    } else {
+        // Authentication Screens (Login, Registration)
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = Color.Gray
         ) {
             when (currentScreen) {
-                is NavScreen.Home -> HomeScreen()
-                is NavScreen.History -> HistoryScreen()
-                is NavScreen.Settings -> SettingsScreen()
+                Screen.Login -> LoginForm(
+                    onLoginSuccess = {
+                        currentNavScreen = NavScreen.Home
+                    },
+                    onSignUpClicked = {
+                        currentScreen = Screen.Registration
+                    }
+                )
+                Screen.Registration -> RegistrationForm {
+                    currentScreen = Screen.Login
+                }
+                else -> {}
             }
         }
     }
@@ -237,16 +266,16 @@ fun BottomNavigationBar(
 ) {
     BottomNavigation {
         BottomNavigationItem(
-            icon = { Icon(Icons.Filled.Home, null) },
-            label = { Text("Home") },
-            selected = currentScreen is NavScreen.Home,
-            onClick = { onNavItemSelected(NavScreen.Home) }
-        )
-        BottomNavigationItem(
             icon = { Icon(Icons.Filled.AccountBox, null) },
             label = { Text("History") },
             selected = currentScreen is NavScreen.History,
             onClick = { onNavItemSelected(NavScreen.History) }
+        )
+        BottomNavigationItem(
+            icon = { Icon(Icons.Filled.Home, null) },
+            label = { Text("Home") },
+            selected = currentScreen is NavScreen.Home,
+            onClick = { onNavItemSelected(NavScreen.Home) }
         )
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Settings, null) },
@@ -259,46 +288,7 @@ fun BottomNavigationBar(
 
 
 
-//
-//
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
-//@Composable
-//fun MainScreen() {
-//    var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
-//
-//    Scaffold(
-//
-//    ) {
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = Color.Gray
-//        ) {
-//            when (currentScreen) {
-//                Screen.Login -> LoginForm(
-//                    onLoginSuccess = {
-//                        Log.d("MainScreen", "Login successful, navigating to HomePage")
-//                        currentScreen = Screen.HomePage
-//                    },
-//                    onSignUpClicked = {
-//                        Log.d("MainScreen", "Navigating to Registration")
-//                        currentScreen = Screen.Registration
-//                    }
-//                )
-//                Screen.Registration -> RegistrationForm {
-//                    Log.d("MainScreen", "Navigating to Login")
-//                    currentScreen = Screen.Login
-//                }
-//                Screen.HomePage -> HomeScreen()
-//                Screen.LiveFeed -> LiveFeedScreen()
-//                Screen.AddNewFace -> AddNewFace()
-//            }
-//        }
-//    }
-//}
 
-fun LiveFeedScreen() {
-    TODO("Not yet implemented")
-}
 
 
 @Composable
@@ -497,10 +487,10 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray) // Set the background color to gray
+            .background(Color.Gray) // bg gray
             .padding(20.dp)
     ) {
-        Spacer(modifier = Modifier.height(1.dp)) // Adjust the height to lower the position of the text and button
+        Spacer(modifier = Modifier.height(0.dp)) // Adjust the height to lower the position of the text and button
 
         Row(
             modifier = Modifier
@@ -510,7 +500,8 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
         ) {Text(
             text = "Unknown",
             color = Color.White,
-            style = TextStyle(fontSize = 40.sp), // Increased font size
+
+            style = TextStyle(fontSize = 28.sp), // Increased font size
             modifier = Modifier.weight(4f)
         )
 
@@ -541,19 +532,19 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
         }
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
-            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h5)
-            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h5)
-            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h5)
+            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
+            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
+            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(30.dp))
 
 
         ChatMessageBox()
@@ -573,21 +564,21 @@ fun AddNewFace() {
 
         Text(
             text = "Add Face",
-            style = MaterialTheme.typography.h3,
+            style = MaterialTheme.typography.h5,
             color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Image(
             painter = painterResource(id = R.drawable.hannah), // Replace with the actual image resource
             contentDescription = "Logo",
-            modifier = Modifier.size(300.dp),
+            modifier = Modifier.size(280.dp),
             contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         TextInput(InputType.FirstName)
         Spacer(modifier = Modifier.height(8.dp))
