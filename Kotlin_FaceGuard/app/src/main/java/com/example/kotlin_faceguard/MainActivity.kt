@@ -14,6 +14,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +35,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 
 
 class MainActivity : ComponentActivity() {
@@ -47,45 +52,48 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+sealed class NavScreen(val route: String) {
+    object Home : NavScreen("Home")
+    object History : NavScreen("History")
+    object Settings : NavScreen("Settings")
+}
+
 @Composable
-fun BottomNavigationBar(currentScreen: Screen, onNavItemSelected: (Screen) -> Unit) {
-    BottomNavigation {
-        BottomNavigationItem(
-            icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = currentScreen == Screen.HomePage,
-            onClick = { onNavItemSelected(Screen.LiveFeed) }
-        )
-        BottomNavigationItem(
-            icon = { Icon(Icons.Filled.Home, contentDescription = "Live Feed") },
-            label = { Text("Live Feed") },
-            selected = currentScreen == Screen.LiveFeed,
-            onClick = { onNavItemSelected(Screen.LiveFeed) }
-        )
-        BottomNavigationItem(
-            icon = { Icon(Icons.Filled.Settings, contentDescription = "Add New Face") },
-            label = { Text("Add New Face") },
-            selected = currentScreen == Screen.AddNewFace,
-            onClick = { onNavItemSelected(Screen.AddNewFace) }
-        )
+fun HistoryScreen() {
+    // Sample data with different image resource IDs
+    val historyItems = listOf(
+        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.house),
+        HistoryItem("Jane Smith", "Dec 1, 2023, 09:30 AM", false, R.drawable.john_image_),
+        // Add more items with different images...
+    )
+
+    LazyColumn {
+        items(historyItems) { item ->
+            HistoryCard(item)
+        }
     }
 }
 
 
 
+
+@Composable
+fun SettingsScreen() {
+    // Implement the UI for the settings screen
+    Text(text = "Settings Screen")
+}
+
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
+    var currentScreen by remember { mutableStateOf<NavScreen>(NavScreen.Home) }
 
     Scaffold(
         bottomBar = {
-            // Show bottom bar only on HomePage, LiveFeedScreen, and AddNewFace screens
-            if (currentScreen in listOf(Screen.HomePage, Screen.LiveFeed, Screen.AddNewFace)) {
-                BottomNavigationBar(currentScreen) { selectedScreen ->
-                    Log.d("MainScreen", "Navigating to screen: $selectedScreen")
-                    currentScreen = selectedScreen
-                }
+            BottomNavigationBar(currentScreen) { screen ->
+                currentScreen = screen
             }
         }
     ) {
@@ -94,27 +102,79 @@ fun MainScreen() {
             color = Color.Gray
         ) {
             when (currentScreen) {
-                Screen.Login -> LoginForm(
-                    onLoginSuccess = {
-                        Log.d("MainScreen", "Login successful, navigating to HomePage")
-                        currentScreen = Screen.HomePage
-                    },
-                    onSignUpClicked = {
-                        Log.d("MainScreen", "Navigating to Registration")
-                        currentScreen = Screen.Registration
-                    }
-                )
-                Screen.Registration -> RegistrationForm {
-                    Log.d("MainScreen", "Navigating to Login")
-                    currentScreen = Screen.Login
-                }
-                Screen.HomePage -> HomeScreen()
-                Screen.LiveFeed -> LiveFeedScreen()
-                Screen.AddNewFace -> AddNewFace()
+                is NavScreen.Home -> HomeScreen()
+                is NavScreen.History -> HistoryScreen()
+                is NavScreen.Settings -> SettingsScreen()
             }
         }
     }
 }
+
+@Composable
+fun BottomNavigationBar(
+    currentScreen: NavScreen,
+    onNavItemSelected: (NavScreen) -> Unit
+) {
+    BottomNavigation {
+        BottomNavigationItem(
+            icon = { Icon(Icons.Filled.Home, null) },
+            label = { Text("Home") },
+            selected = currentScreen is NavScreen.Home,
+            onClick = { onNavItemSelected(NavScreen.Home) }
+        )
+        BottomNavigationItem(
+            icon = { Icon(Icons.Filled.AccountBox, null) },
+            label = { Text("History") },
+            selected = currentScreen is NavScreen.History,
+            onClick = { onNavItemSelected(NavScreen.History) }
+        )
+        BottomNavigationItem(
+            icon = { Icon(Icons.Filled.Settings, null) },
+            label = { Text("Settings") },
+            selected = currentScreen is NavScreen.Settings,
+            onClick = { onNavItemSelected(NavScreen.Settings) }
+        )
+    }
+}
+
+
+
+//
+//
+//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
+//@Composable
+//fun MainScreen() {
+//    var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
+//
+//    Scaffold(
+//
+//    ) {
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = Color.Gray
+//        ) {
+//            when (currentScreen) {
+//                Screen.Login -> LoginForm(
+//                    onLoginSuccess = {
+//                        Log.d("MainScreen", "Login successful, navigating to HomePage")
+//                        currentScreen = Screen.HomePage
+//                    },
+//                    onSignUpClicked = {
+//                        Log.d("MainScreen", "Navigating to Registration")
+//                        currentScreen = Screen.Registration
+//                    }
+//                )
+//                Screen.Registration -> RegistrationForm {
+//                    Log.d("MainScreen", "Navigating to Login")
+//                    currentScreen = Screen.Login
+//                }
+//                Screen.HomePage -> HomeScreen()
+//                Screen.LiveFeed -> LiveFeedScreen()
+//                Screen.AddNewFace -> AddNewFace()
+//            }
+//        }
+//    }
+//}
 
 fun LiveFeedScreen() {
     TODO("Not yet implemented")
@@ -208,6 +268,7 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
 }
 
 val CustomGray = Color(rgb(136, 136, 136)) // Custom gray color
+val Customtop = Color(rgb(133, 147, 122)) // Custom gray color
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
@@ -220,18 +281,13 @@ fun HomeScreen() {
             TopAppBar(
                 title = {
                     Text(
-                        "John's Home",
+                        "FaceGuard",
                         color = Color.Black,
-                        style = MaterialTheme.typography.h3// Custom typography
+                        style = MaterialTheme.typography.h4
                     )
                 },
-//                backgroundColor = MaterialTheme.colors.primary, // Use theme's primary color
-                actions = {
-                    // Add an action icon if necessary
-                    IconButton(onClick = { /* Handle action */ }) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
-                    }
-                }
+                backgroundColor = Customtop,
+
             )
         },
         content = {
@@ -242,7 +298,7 @@ fun HomeScreen() {
                         modifier = Modifier
                             .fillMaxSize()
                             .background(CustomGray)
-                            .padding(40.dp)
+                            .padding(30.dp)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.photooutputbgchange__1_),
@@ -322,9 +378,9 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Gray) // Set the background color to gray
-            .padding(30.dp)
+            .padding(20.dp)
     ) {
-        Spacer(modifier = Modifier.height(50.dp)) // Adjust the height to lower the position of the text and button
+        Spacer(modifier = Modifier.height(1.dp)) // Adjust the height to lower the position of the text and button
 
         Row(
             modifier = Modifier
@@ -371,10 +427,10 @@ fun LiveFeedScreen(onAddFaceClicked: () -> Unit) {
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Today", color = Color.White, style = MaterialTheme.typography.h3)
-            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h3)
-            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h3)
-            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h3)
+            Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
+            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h5)
+            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h5)
+            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h5)
         }
 
         Spacer(modifier = Modifier.weight(1f))
