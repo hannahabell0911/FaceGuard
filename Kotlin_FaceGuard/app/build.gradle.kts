@@ -68,5 +68,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")// Use the latest version
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+
 }
