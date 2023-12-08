@@ -545,18 +545,25 @@ fun LiveFeedScreen(navController: NavHostController) {
                 backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
+                        // Back button
                         IconButton(onClick = { navController.navigate("home") }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
+                        // Spacer to push the title to the center
+                        Spacer(modifier = Modifier.weight(0.55f))
+                        // Title
                         Text(
                             "FaceGuard",
                             color = Color.White,
                             style = MaterialTheme.typography.h4
                         )
+                        // Another spacer to balance the layout
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             )
@@ -622,8 +629,9 @@ fun LiveFeedScreen(navController: NavHostController) {
             Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
             Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
         }
+        Spacer(modifier = Modifier.height(25.dp))
 
-        // Additional UI elements and functionalities
+        ChatMessageBox()
     }
 }
 }
@@ -632,26 +640,31 @@ fun LiveFeedScreen(navController: NavHostController) {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AddNewFace(navController: NavHostController) {
-
-
     Scaffold(
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
+                        // Back button
                         IconButton(onClick = { navController.navigate("liveFeed") }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
+                        // Spacer to push the title to the center
+                        Spacer(modifier = Modifier.weight(0.55f))
+                        // Title
                         Text(
                             "FaceGuard",
                             color = Color.White,
                             style = MaterialTheme.typography.h4
                         )
+                        // Another spacer to balance the layout
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             )
