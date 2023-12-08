@@ -1,4 +1,4 @@
-   *** Date 7th December 2023 ***
+   *** Date 5th December 2023 ***
 
    After Giving user the app so that they can play around in the app , We got the following feedbacks 
 
@@ -14,3 +14,37 @@
      This was the general feedback we got from testing in the college with fellow students , with the following feedbacks changes to the frontend will be made accordinly and then User testing will be performed again 
 
    
+
+
+
+
+
+   ***  User Testing ***  8th December
+
+   Test subject -Tanish Afre 
+   Profession   - 4th year Student in DKIT ( Software Development )
+   Tech level   - Tech Savvy
+
+ 
+   Did this user testing with my flatmate  Tanish , and asked him to be the user inside the house . 
+
+   We simulated a dilevary guy came up to the the door for a dilivery , the motion sensor detects the the motion and the speaker says , Stand in front of the camera for 3 seconds . The camera takes in a picture and runs facial recognition , depending on the result its either gonna say the name of the person or display a unknown person on the livefeed . 
+
+
+   So after simulating this Tanish  used the app to navigate into the livefeed to see a hardcoded image of  the unknown dilivery driver , he didnt wanna add him to the database as he was not a regular person , but if he wished to do so he could have .
+
+   His feedbacks after using the app were , 
+        
+        1. The minimalist design allowed him to navigate into the live feed screen easily 
+
+        2.In the live feed screen the information was enough for him to come to a onclusion weather he wants to attend the door or not .
+
+        3. He said it would have been nicer if there was some kind of a red notification on the home Screen to hellp me  find the live feed view instantly 
+
+          *** after a bit of research  and examining  different UI designs from pinterest , grey and purple make a good contrast , So that is why we have stuck with that in out UI ***
+
+
+
+
+  
+
