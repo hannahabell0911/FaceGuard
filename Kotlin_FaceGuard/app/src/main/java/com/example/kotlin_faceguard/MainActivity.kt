@@ -138,8 +138,21 @@ fun HistoryScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("FaceGuard", color = Color.Black, style = MaterialTheme.typography.h4) },
-                backgroundColor = Customtop
+                backgroundColor = MaterialTheme.colors.primary,
+                title = {
+                    // Wrap Text in Row for center alignment
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "FaceGuard",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h4
+                        )
+                    }
+                }
             )
         },
         backgroundColor = CustomGray // bg color
@@ -431,15 +444,21 @@ fun HomeScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
+                backgroundColor = MaterialTheme.colors.primary,
                 title = {
-                    Text(
-                        "FaceGuard",
-                        color = Color.Black,
-                        style = MaterialTheme.typography.h4
-                    )
-                },
-                backgroundColor = Customtop,
-
+                    // Wrap Text in Row for center alignment
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "FaceGuard",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h4
+                        )
+                    }
+                }
             )
         },
         content = {
