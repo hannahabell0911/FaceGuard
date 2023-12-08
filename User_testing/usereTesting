@@ -1,0 +1,16 @@
+   *** Date 7th December 2023 ***
+
+   After Giving user the app so that they can play around in the app , We got the following feedbacks 
+
+     1. Green topbar is not the best color , it wasnt matching with the purple used for the bottom navigation , which was looking a bit odd .
+
+     2. The heading has to be in the middle of the screen to show its the title of the project 
+
+     3. There was no back button in the topbar with which you could go back which was a hassale for the user to do 
+
+     4. Suggested that the background color could be changed , could be made a little bit lighter 
+
+     
+     This was the general feedback we got from testing in the college with fellow students , with the following feedbacks changes to the frontend will be made accordinly and then User testing will be performed again 
+
+   
