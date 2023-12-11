@@ -46,7 +46,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import coil.compose.rememberImagePainter
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.yourpackage.api.ApiService
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.livedata.observeAsState
+import com.yourpackage.api.RetrofitService
+import com.yourpackage.api.com.example.kotlin_faceguard.KnownFace
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -281,7 +293,8 @@ fun MainScreen() {
 //            composable(Screen.Registration.route) { RegistrationForm(navController) }
             composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
-            // Add other composables with navigation as needed
+            composable(Screen.KnownFaces.route) { KnownFacesScreen() } // Added this line
+
         }
     }
 }
@@ -339,10 +352,73 @@ enum class Screen(val route: String, val icon: ImageVector, val title: String) {
     Login("login", Icons.Filled.Warning, "Login"),
     Registration("registration", Icons.Filled.Warning, "Register"),
     LiveFeed("liveFeed", Icons.Filled.Warning, "Live Feed"),
-    AddNewFace("addNewFace", Icons.Filled.Face, "Add New Face")
+    AddNewFace("addNewFace", Icons.Filled.Face, "Add New Face"),
+    KnownFaces("knownFaces", Icons.Filled.Face, "Add New Face")
     // Define other screens as needed
 }
 
+
+
+class KnownFacesViewModel : ViewModel() {
+    private val _knownFaces = MutableLiveData<List<KnownFace>>()
+    val knownFaces: LiveData<List<KnownFace>> = _knownFaces
+
+    init {
+        fetchKnownFaces()
+    }
+
+    private fun fetchKnownFaces() {
+        viewModelScope.launch {
+            try {
+                Log.d("KnownFacesViewModel", "Attempting to fetch known faces")
+                val faces = RetrofitService.apiService.getKnownFaces()
+                _knownFaces.value = faces
+                Log.d("KnownFacesViewModel", "Fetched faces: ${faces.size}")
+            } catch (e: Exception) {
+                Log.e("KnownFacesViewModel", "Error fetching known faces", e)
+                // Handle exceptions
+            }
+        }
+    }
+}
+
+@Composable
+fun KnownFacesScreen(viewModel: KnownFacesViewModel = viewModel()) {
+    val knownFaces by viewModel.knownFaces.observeAsState(initial = emptyList())
+
+    LazyColumn {
+        items(knownFaces) { face ->
+            KnownFaceCard(face)
+        }
+    }
+}
+
+@Composable
+fun KnownFaceCard(face: KnownFace) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Image(
+                painter = rememberImagePainter(face.imageUrl),
+                contentDescription = "Face Image",
+                modifier = Modifier.size(60.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column {
+                Text("Name: ${face.name}")
+                Text("Relation: ${face.relation}")
+                Text("Date: ${face.date}")
+            }
+        }
+    }
+}
 
 
 
@@ -493,7 +569,7 @@ fun HomeScreen(navController: NavController) {
                     navController.navigate("liveFeed")
                 }
                 FeatureCard(title = "Known Faces", icon = Icons.Default.Face) {
-                    // Handle navigation or action for "Known Faces"
+                    navController.navigate(Screen.KnownFaces.route) // Navigate to Known Faces screen
                 }
             }
         }
@@ -535,7 +611,6 @@ fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
     }
 }
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LiveFeedScreen(navController: NavHostController) {
@@ -570,71 +645,84 @@ fun LiveFeedScreen(navController: NavHostController) {
         }
     )
     {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray)
-            .padding(20.dp)
-    ) {
-        Spacer(modifier = Modifier.height(0.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Gray)
+                .padding(20.dp)
         ) {
-            Text(
-                text = "Unknown",
-                color = Color.White,
-                style = TextStyle(fontSize = 28.sp),
-                modifier = Modifier.weight(4f)
-            )
+            Spacer(modifier = Modifier.height(0.dp))
 
-            Button(
-                onClick = { navController.navigate("addNewFace") },
-                modifier = Modifier.padding(end = 8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                    tint = Color.White
+                Text(
+                    text = "Unknown",
+                    color = Color.White,
+                    style = TextStyle(fontSize = 28.sp),
+                    modifier = Modifier.weight(4f)
+                )
+
+                Button(
+                    onClick = { navController.navigate("addNewFace") },
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Box(
+                modifier = Modifier
+                    .height(250.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.hannah),
+                    contentDescription = "Live feed image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
+                Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
+                Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
+                Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
+            }
+            Spacer(modifier = Modifier.height(25.dp))
+
+            ChatMessageBox()
         }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Box(
-            modifier = Modifier
-                .height(250.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.hannah),
-                contentDescription = "Live feed image",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
-            Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
-            Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
-            Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
-        }
-        Spacer(modifier = Modifier.height(25.dp))
-
-        ChatMessageBox()
     }
 }
+
+
+class MyViewModel : ViewModel() {
+    private val _exampleLiveData = MutableLiveData("Default Value")
+    val exampleLiveData: LiveData<String> = _exampleLiveData
+
+    fun updateData(newValue: String) {
+        _exampleLiveData.value = newValue
+    }
 }
+
+
+
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

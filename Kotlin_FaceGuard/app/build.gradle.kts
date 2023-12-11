@@ -70,5 +70,34 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("io.coil-kt:coil-compose:1.3.2")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+// Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+    dependencies {
+        // ViewModel
+        implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+        // If using LiveData
+        implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+        implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+        // For Kotlin coroutines support
+        implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+        dependencies {
+            // Retrofit
+            implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+            // Gson Converter for JSON parsing
+            implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+            implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+            implementation ("androidx.compose.runtime:runtime-livedata:<compose_version>")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+        }
+
+    }
+
 
 }
