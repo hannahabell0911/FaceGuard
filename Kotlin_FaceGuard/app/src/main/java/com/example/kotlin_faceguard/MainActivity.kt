@@ -276,7 +276,6 @@ data class HistoryItem(
 
 
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
@@ -285,20 +284,18 @@ fun MainScreen() {
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) {
-        NavHost(navController = navController, startDestination = Screen.Home.route) {
+        NavHost(navController = navController, startDestination = Screen.Login.route) {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
-//            composable(Screen.Login.route) { LoginForm(navController) }
-//            composable(Screen.Registration.route) { RegistrationForm(navController) }
+            composable(Screen.Login.route) { LoginForm(navController) }
+            composable(Screen.Registration.route) { RegistrationForm(navController) }
             composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
-            composable(Screen.KnownFaces.route) { KnownFacesScreen() } // Added this line
-
+            composable(Screen.KnownFaces.route) { KnownFacesScreen() }
         }
     }
 }
-
 
 
 @Composable
@@ -309,20 +306,23 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home", tint = Color.White) },
             label = { Text("Home", color = Color.White) },
-            selected = navController.currentDestination?.route == "home",
+            selected = navController.currentDestination?.route == Screen.Home.route,
             onClick = {
-                if (navController.currentDestination?.route != "home") {
-                    navController.popBackStack("home", inclusive = false)
+                if (navController.currentDestination?.route != Screen.Home.route) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
                 }
             }
         )
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Warning, contentDescription = "History", tint = Color.White) },
             label = { Text("History", color = Color.White) },
-            selected = navController.currentDestination?.route == "history",
+            selected = navController.currentDestination?.route == Screen.History.route,
             onClick = {
-                if (navController.currentDestination?.route != "history") {
-                    navController.navigate("history") {
+                if (navController.currentDestination?.route != Screen.History.route) {
+                    navController.navigate(Screen.History.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
@@ -332,16 +332,17 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White) },
             label = { Text("Settings", color = Color.White) },
-            selected = navController.currentDestination?.route == "settings",
+            selected = navController.currentDestination?.route == Screen.Settings.route,
             onClick = {
-                if (navController.currentDestination?.route != "settings") {
-                    navController.navigate("settings") {
+                if (navController.currentDestination?.route != Screen.Settings.route) {
+                    navController.navigate(Screen.Settings.route) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
                 }
             }
         )
+        // Add other BottomNavigationItems if necessary
     }
 }
 
@@ -424,7 +425,8 @@ fun KnownFaceCard(face: KnownFace) {
 
 
 @Composable
-fun LoginForm(navController: NavHostController, onSignUpClicked: () -> Unit) {
+fun LoginForm(navController: NavHostController) {
+
     Column(
         Modifier
             .padding(30.dp)
@@ -461,7 +463,7 @@ fun LoginForm(navController: NavHostController, onSignUpClicked: () -> Unit) {
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Don't have an account yet?", color = Color.White)
-            TextButton(onClick = onSignUpClicked) {
+            TextButton(onClick = { navController.navigate("registration") }) {
                 Text("Sign Up")
             }
         }
@@ -469,7 +471,7 @@ fun LoginForm(navController: NavHostController, onSignUpClicked: () -> Unit) {
 }
 @Composable
 
-fun RegistrationForm(onLoginClicked: () -> Unit) {
+fun RegistrationForm(navController: NavHostController) {
     Column(
         Modifier
             .padding(24.dp)
@@ -493,9 +495,9 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
         // Additional Spacer for pushing the button down
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = onLoginClicked, modifier = Modifier.fillMaxWidth()) {
-            Text("Register", Modifier.padding(vertical = 8.dp))
-        }
+//        Button(onClick = onLoginClicked, modifier = Modifier.fillMaxWidth()) {
+//            Text("Register", Modifier.padding(vertical = 8.dp))
+//        }
 
         // Pushing the divider further down
         Spacer(modifier = Modifier.height(48.dp))
@@ -508,7 +510,7 @@ fun RegistrationForm(onLoginClicked: () -> Unit) {
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Already have an Account?", color = Color.White)
-            TextButton(onClick = onLoginClicked) {
+            TextButton(onClick = { navController.navigate("login") }) {
                 Text("Login")
             }
         }
