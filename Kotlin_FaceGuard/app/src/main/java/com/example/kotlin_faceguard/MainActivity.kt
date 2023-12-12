@@ -59,6 +59,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import com.yourpackage.api.RetrofitService
 import com.yourpackage.api.com.example.kotlin_faceguard.KnownFace
 import android.util.Log
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -274,15 +275,20 @@ data class HistoryItem(
 
 
 
-
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
 
+    // Getting the current route to determine if the bottom bar should be shown
+    val currentRoute = getCurrentRoute(navController)
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = {
+            if (currentRoute != Screen.Login.route && currentRoute != Screen.Registration.route) {
+                BottomNavigationBar(navController)
+            }
+        }
     ) {
         NavHost(navController = navController, startDestination = Screen.Login.route) {
             composable(Screen.Home.route) { HomeScreen(navController) }
@@ -297,6 +303,12 @@ fun MainScreen() {
     }
 }
 
+// Function to get the current route from the NavHostController
+@Composable
+fun getCurrentRoute(navController: NavController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
+}
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -423,95 +435,100 @@ fun KnownFaceCard(face: KnownFace) {
 
 
 
-
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LoginForm(navController: NavHostController) {
-
-    Column(
-        Modifier
-            .padding(30.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.Bottom),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        backgroundColor = Color.Gray // Set the background color for Scaffold
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.faceguard_icon),
-            contentDescription = "Logo",
-            modifier = Modifier.size(200.dp),
-            contentScale = ContentScale.Fit
-        )
-
-        TextInput(InputType.Username)
-        TextInput(InputType.Password)
-
-        Button(
-            onClick = {
-                // Implement your login logic here
-                // On successful login, navigate to the home screen
-                navController.navigate("home")
-            },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            Modifier
+                .padding(30.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.Bottom),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Login", Modifier.padding(vertical = 8.dp))
-        }
+            Image(
+                painter = painterResource(id = R.drawable.faceguard_icon),
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Fit
+            )
 
-        Divider(
-            color = Color.White,
-            thickness = 1.dp,
-            modifier = Modifier.padding(top = 48.dp)
-        )
+            TextInput(InputType.Username)
+            TextInput(InputType.Password)
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Don't have an account yet?", color = Color.White)
-            TextButton(onClick = { navController.navigate("registration") }) {
-                Text("Sign Up")
+            Button(
+                onClick = {
+
+                    navController.navigate("home")
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Login", Modifier.padding(vertical = 8.dp))
+            }
+
+            Divider(
+                color = Color.White,
+                thickness = 1.dp,
+                modifier = Modifier.padding(top = 48.dp)
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Don't have an account yet?", color = Color.White)
+                TextButton(onClick = { navController.navigate("registration") }) {
+                    Text("Sign Up")
+                }
             }
         }
     }
 }
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-
 fun RegistrationForm(navController: NavHostController) {
-    Column(
-        Modifier
-            .padding(24.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        backgroundColor = Color.Gray // Set the background color for Scaffold
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.faceguard_icon),
-            contentDescription = "Logo",
-            modifier = Modifier.size(200.dp),
-            contentScale = ContentScale.Fit
-        )
+        Column(
+            Modifier
+                .padding(24.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.faceguard_icon),
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.Fit
+            )
 
-        TextInput(InputType.FirstName)
-        TextInput(InputType.Surname)
-        TextInput(InputType.Email)
-        TextInput(InputType.Password)
-        TextInput(InputType.ConfirmPassword)
+            TextInput(InputType.FirstName)
+            TextInput(InputType.Surname)
+            TextInput(InputType.Email)
+            TextInput(InputType.Password)
+            TextInput(InputType.ConfirmPassword)
 
-        // Additional Spacer for pushing the button down
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-//        Button(onClick = onLoginClicked, modifier = Modifier.fillMaxWidth()) {
-//            Text("Register", Modifier.padding(vertical = 8.dp))
-//        }
+            Button(onClick = { navController.navigate("login") }, modifier = Modifier.fillMaxWidth()) {
+                Text("Register", Modifier.padding(vertical = 8.dp))
+            }
 
-        // Pushing the divider further down
-        Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-        Divider(
-            color = Color.White,
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 16.dp) // Adjust padding as needed
-        )
+            Divider(
+                color = Color.White,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Already have an Account?", color = Color.White)
-            TextButton(onClick = { navController.navigate("login") }) {
-                Text("Login")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Already have an Account?", color = Color.White)
+                TextButton(onClick = { navController.navigate("login") }) {
+                    Text("Login")
+                }
             }
         }
     }
