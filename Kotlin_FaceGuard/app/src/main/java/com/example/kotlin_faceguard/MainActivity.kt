@@ -59,11 +59,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import com.yourpackage.api.RetrofitService
 import com.yourpackage.api.com.example.kotlin_faceguard.KnownFace
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.ui.draw.scale
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("MainActivity", "onCreate started")
         setContent {
             Kotlin_FaceGuardTheme {
 
@@ -128,6 +136,7 @@ sealed class NavScreen(val route: String) {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HistoryScreen(navController: NavHostController) {
+    Log.d("History Screen ", "Composing History")
     var filterOption by remember { mutableStateOf("Today") }
     val historyItems = listOf(
         HistoryItem("John Doe", "Dec 2, 2023, 9:00 AM", true, R.drawable.hannah),
@@ -273,7 +282,7 @@ data class HistoryItem(
     val imageResId: Int
 )
 
-
+// Add a new route for the splash screen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -285,23 +294,32 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            if (currentRoute != Screen.Login.route && currentRoute != Screen.Registration.route) {
+            // Check if the current route is neither the login, registration, nor splash screen
+            if (currentRoute != Screen.Login.route
+                && currentRoute != Screen.Registration.route
+                && currentRoute != "splash") {
                 BottomNavigationBar(navController)
             }
         }
     ) {
-        NavHost(navController = navController, startDestination = Screen.Login.route) {
+        NavHost(navController = navController, startDestination = "splash") {
+            composable("splash") { SplashScreen(navController) }
+            composable(Screen.Login.route) { LoginForm(navController) }
+            composable(Screen.Registration.route) { RegistrationForm(navController) }
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
-            composable(Screen.Login.route) { LoginForm(navController) }
-            composable(Screen.Registration.route) { RegistrationForm(navController) }
             composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
-            composable(Screen.KnownFaces.route) { KnownFacesScreen() }
+            composable(Screen.KnownFaces.route) { KnownFacesScreen(navController) }
+            // ... other composable routes ...
         }
     }
 }
+@Composable
+fun SplashScreen(navController: NavController) {
+}
+
 
 // Function to get the current route from the NavHostController
 @Composable
@@ -358,23 +376,24 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
-enum class Screen(val route: String, val icon: ImageVector, val title: String) {
-    Home("home", Icons.Filled.Home, "Home"),
-    History("history", Icons.Filled.Warning, "History"),
-    Settings("settings", Icons.Filled.Settings, "Settings"),
-    Login("login", Icons.Filled.Warning, "Login"),
-    Registration("registration", Icons.Filled.Warning, "Register"),
-    LiveFeed("liveFeed", Icons.Filled.Warning, "Live Feed"),
-    AddNewFace("addNewFace", Icons.Filled.Face, "Add New Face"),
-    KnownFaces("knownFaces", Icons.Filled.Face, "Add New Face")
-    // Define other screens as needed
+enum class Screen(val route: String) {
+    Login("login"),
+    Registration("registration"),
+    Home("home"),
+    History("history"),
+    Settings("settings"),
+    LiveFeed("liveFeed"),
+    AddNewFace("addNewFace"),
+    KnownFaces("knownFaces")
+    // ... other screen routes ...
 }
-
-
 
 class KnownFacesViewModel : ViewModel() {
     private val _knownFaces = MutableLiveData<List<KnownFace>>()
     val knownFaces: LiveData<List<KnownFace>> = _knownFaces
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
 
     init {
         fetchKnownFaces()
@@ -388,20 +407,51 @@ class KnownFacesViewModel : ViewModel() {
                 _knownFaces.value = faces
                 Log.d("KnownFacesViewModel", "Fetched faces: ${faces.size}")
             } catch (e: Exception) {
+                _error.value = "Failed to fetch known faces"
                 Log.e("KnownFacesViewModel", "Error fetching known faces", e)
-                // Handle exceptions
             }
         }
     }
 }
-
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun KnownFacesScreen(viewModel: KnownFacesViewModel = viewModel()) {
-    val knownFaces by viewModel.knownFaces.observeAsState(initial = emptyList())
+fun KnownFacesScreen(navController: NavController, viewModel: KnownFacesViewModel = viewModel()) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.primary,
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        // Back button
+                        IconButton(onClick = { navController.navigate("home") }) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        }
+                        // Spacer to push the title to the center
+                        Spacer(modifier = Modifier.weight(0.55f))
+                        // Title
+                        Text(
+                            "Known Faces",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h4
+                        )
+                        // Another spacer to balance the layout
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            )
+        },
+        backgroundColor = Color.Gray // Set the background color for Scaffold
+    ) {
+        val knownFaces by viewModel.knownFaces.observeAsState(initial = emptyList())
 
-    LazyColumn {
-        items(knownFaces) { face ->
-            KnownFaceCard(face)
+        LazyColumn {
+            items(knownFaces) { face ->
+                KnownFaceCard(face)
+            }
         }
     }
 }
@@ -412,22 +462,33 @@ fun KnownFaceCard(face: KnownFace) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
+        shape = RoundedCornerShape(12.dp) // Match the rounded corners from HistoryCard
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Circular image
             Image(
                 painter = rememberImagePainter(face.imageUrl),
                 contentDescription = "Face Image",
-                modifier = Modifier.size(60.dp),
-                contentScale = ContentScale.Crop
+                modifier = Modifier
+                    .size(40.dp) // Adjusted to match the size in HistoryCard
+                    .clip(CircleShape)
             )
-            Column {
-                Text("Name: ${face.name}")
-                Text("Relation: ${face.relation}")
-                Text("Date: ${face.date}")
+
+            // Middle content (Name, Relation, and Date)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp)
+            ) {
+                Text(text = face.name, fontWeight = FontWeight.Bold) // Name
+                Text(text = "Relation: ${face.relation}") // Relation
+                Text(text = "Date: ${face.date}") // Date
             }
         }
     }
@@ -435,9 +496,11 @@ fun KnownFaceCard(face: KnownFace) {
 
 
 
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LoginForm(navController: NavHostController) {
+    Log.d("LoginForm", "Composing LoginForm")
     Scaffold(
         backgroundColor = Color.Gray // Set the background color for Scaffold
     ) {
@@ -484,9 +547,11 @@ fun LoginForm(navController: NavHostController) {
     }
 }
 
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun RegistrationForm(navController: NavHostController) {
+    Log.d("RegistrationForm", "Composing Registeration")
     Scaffold(
         backgroundColor = Color.Gray // Set the background color for Scaffold
     ) {
