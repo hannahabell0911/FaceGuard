@@ -315,12 +315,45 @@ fun MainScreen() {
             // ... other composable routes ...
         }
     }
+
 }
+
+
 @Composable
 fun SplashScreen(navController: NavController) {
+    val visible = remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = true) {
+        delay(2000) // Duration of the splash screen
+        visible.value = false
+        delay(500) // Additional delay for the fade-out animation
+        navController.navigate(Screen.Login.route) {
+            popUpTo("splash") { inclusive = true }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = visible.value,
+        exit = fadeOut(animationSpec = tween(durationMillis = 500))
+    ) {
+        // Splash screen UI with background image positioned higher
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Gray), // Set background color to gray
+            contentAlignment = Alignment.TopCenter // Aligns content to the top
+        ) {
+            // Replace 'R.drawable.your_splash_image' with your actual image resource
+            Image(
+                painter = painterResource(id = R.drawable.faceguard_icon),
+                contentDescription = "Splash Background",
+                modifier = Modifier
+                    .size(320.dp) // Adjust the size to match the login page
+                    .padding(top = 130.dp) // Adjust padding to move the image higher up
+            )
+        }
+    }
 }
-
-
 // Function to get the current route from the NavHostController
 @Composable
 fun getCurrentRoute(navController: NavController): String? {
