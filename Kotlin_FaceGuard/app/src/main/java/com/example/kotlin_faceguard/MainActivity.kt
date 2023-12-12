@@ -65,7 +65,15 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.kotlin_faceguard.ui.auth.LoginForm
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.History.HistoryScreen
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.auth.RegistrationForm
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.ChatMessageBox
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.InputType
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.knownFaces.KnownFacesScreen
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.settings.SettingsScreen
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -81,48 +89,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-@Composable
-fun SettingsScreen(navController: NavHostController) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    ModalDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DrawerContent(onClose = { scope.launch { drawerState.close() } })
-        },
-        content = {
-            SettingsContent(onOpenDrawer = { scope.launch { drawerState.open() } })
-        }
-    )
-}
-
-@Composable
-fun DrawerContent(onClose: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        IconButton(onClick = onClose) {
-            Icon(Icons.Filled.Close, contentDescription = "Close Drawer")
-        }
-        Spacer(Modifier.height(16.dp))
-        Text("About Us", fontWeight = FontWeight.Bold)
-        Text("Theme", fontWeight = FontWeight.Bold)
-        Text("Logout", fontWeight = FontWeight.Bold)
-        Text("Help", fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-fun SettingsContent(onOpenDrawer: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = onOpenDrawer) {
-            Text("Open Settings")
-        }
-    }
-}
 
 
 
@@ -133,156 +99,6 @@ sealed class NavScreen(val route: String) {
     object Settings : NavScreen("Settings")
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun HistoryScreen(navController: NavHostController) {
-    Log.d("History Screen ", "Composing History")
-    var filterOption by remember { mutableStateOf("Today") }
-    val historyItems = listOf(
-        HistoryItem("John Doe", "Dec 2, 2023, 9:00 AM", true, R.drawable.hannah),
-        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.john_image_),
-        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.hannah),
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.john_image_),
-        HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.newimage),
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
-        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.john_image_),
-        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.photo_output),
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
-        HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.john_image_),
-        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.newimage),
-
-
-    )
-    val filteredItems = when (filterOption) {
-        "Today" -> historyItems.filter { it.dateTime.isToday() }
-        "Yesterday" -> historyItems.filter { it.dateTime.isYesterday() }
-        "Last Week" -> historyItems.filter { it.dateTime.isLastWeek() }
-        else -> historyItems
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary,
-                title = {
-                    // Wrap Text in Row for center alignment
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            "FaceGuard",
-                            color = Color.White,
-                            style = MaterialTheme.typography.h4
-                        )
-                    }
-                }
-            )
-        },
-        backgroundColor = CustomGray // bg color
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("History", style = MaterialTheme.typography.h5, fontWeight = FontWeight.Bold)
-                DropdownMenuExample(filterOption) { selectedOption ->
-                    filterOption = selectedOption
-                }
-            }
-            LazyColumn {
-                items(filteredItems) { item ->
-                    HistoryCard(item)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DropdownMenuExample(selectedOption: String, onOptionSelected: (String) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    val options = listOf("Today", "Yesterday", "Last Week")
-
-    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-        Text(selectedOption, modifier = Modifier.clickable { expanded = true })
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(onClick = {
-                    expanded = false
-                    onOptionSelected(option)
-                }) {
-                    Text(option)
-                }
-            }
-        }
-    }
-}
-
-// Dummy extension functions for date checks, replace with your actual logic
-fun String.isToday(): Boolean = this.contains("Dec 2, 2023") // Replace with actual logic
-fun String.isYesterday(): Boolean = this.contains("Nov 30, 2023") // Replace with actual logic
-fun String.isLastWeek(): Boolean = this.contains("Nov") // Replace with actual logic
-
-
-@Composable
-fun HistoryCard(historyItem: HistoryItem) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 4.dp,
-        shape = RoundedCornerShape(12.dp) // Rounded corners
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Circular image
-            Image(
-                painter = painterResource(id = historyItem.imageResId),
-                contentDescription = "Photo",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-
-            // Middle content (Name and Known/Unknown label)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp)
-            ) {
-                Text(text = historyItem.name, fontWeight = FontWeight.Bold)
-                Text(text = if (historyItem.isKnown) "Known" else "Unknown")
-            }
-
-            // Date and time
-            Text(text = historyItem.dateTime, textAlign = TextAlign.End)
-        }
-    }
-}
-
-
-data class HistoryItem(
-    val name: String,
-    val dateTime: String,
-    val isKnown: Boolean,
-    val imageResId: Int
-)
-
-// Add a new route for the splash screen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -312,12 +128,11 @@ fun MainScreen() {
             composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
             composable(Screen.KnownFaces.route) { KnownFacesScreen(navController) }
-            // ... other composable routes ...
+
         }
     }
 
 }
-
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -336,25 +151,43 @@ fun SplashScreen(navController: NavController) {
         visible = visible.value,
         exit = fadeOut(animationSpec = tween(durationMillis = 500))
     ) {
-        // Splash screen UI with background image positioned higher
+        // Splash screen UI with background image positioned higher and text at the bottom
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Gray), // Set background color to gray
-            contentAlignment = Alignment.TopCenter // Aligns content to the top
+                .background(Color.Gray),
+            contentAlignment = Alignment.TopCenter
         ) {
-            // Replace 'R.drawable.your_splash_image' with your actual image resource
+
             Image(
                 painter = painterResource(id = R.drawable.faceguard_icon),
                 contentDescription = "Splash Background",
                 modifier = Modifier
-                    .size(320.dp) // Adjust the size to match the login page
-                    .padding(top = 130.dp) // Adjust padding to move the image higher up
+                    .size(320.dp)
+                    .padding(top = 130.dp)
             )
+
+            // FaceGuard Text
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Text(
+                    text = "FaceGuard",
+                    style = TextStyle(
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 90.sp,
+                        color = Color.White
+                    ),
+                    modifier = Modifier.padding(bottom = 270.dp)
+                )
+            }
         }
     }
 }
-// Function to get the current route from the NavHostController
+
 @Composable
 fun getCurrentRoute(navController: NavController): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -405,7 +238,7 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             }
         )
-        // Add other BottomNavigationItems if necessary
+
     }
 }
 
@@ -421,216 +254,8 @@ enum class Screen(val route: String) {
     // ... other screen routes ...
 }
 
-class KnownFacesViewModel : ViewModel() {
-    private val _knownFaces = MutableLiveData<List<KnownFace>>()
-    val knownFaces: LiveData<List<KnownFace>> = _knownFaces
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
-
-    init {
-        fetchKnownFaces()
-    }
-
-    private fun fetchKnownFaces() {
-        viewModelScope.launch {
-            try {
-                Log.d("KnownFacesViewModel", "Attempting to fetch known faces")
-                val faces = RetrofitService.apiService.getKnownFaces()
-                _knownFaces.value = faces
-                Log.d("KnownFacesViewModel", "Fetched faces: ${faces.size}")
-            } catch (e: Exception) {
-                _error.value = "Failed to fetch known faces"
-                Log.e("KnownFacesViewModel", "Error fetching known faces", e)
-            }
-        }
-    }
-}
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun KnownFacesScreen(navController: NavController, viewModel: KnownFacesViewModel = viewModel()) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary,
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        // Back button
-                        IconButton(onClick = { navController.navigate("home") }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                        }
-                        // Spacer to push the title to the center
-                        Spacer(modifier = Modifier.weight(0.55f))
-                        // Title
-                        Text(
-                            "Known Faces",
-                            color = Color.White,
-                            style = MaterialTheme.typography.h4
-                        )
-                        // Another spacer to balance the layout
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            )
-        },
-        backgroundColor = Color.Gray // Set the background color for Scaffold
-    ) {
-        val knownFaces by viewModel.knownFaces.observeAsState(initial = emptyList())
-
-        LazyColumn {
-            items(knownFaces) { face ->
-                KnownFaceCard(face)
-            }
-        }
-    }
-}
-
-@Composable
-fun KnownFaceCard(face: KnownFace) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 4.dp,
-        shape = RoundedCornerShape(12.dp) // Match the rounded corners from HistoryCard
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Circular image
-            Image(
-                painter = rememberImagePainter(face.imageUrl),
-                contentDescription = "Face Image",
-                modifier = Modifier
-                    .size(40.dp) // Adjusted to match the size in HistoryCard
-                    .clip(CircleShape)
-            )
-
-            // Middle content (Name, Relation, and Date)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp)
-            ) {
-                Text(text = face.name, fontWeight = FontWeight.Bold) // Name
-                Text(text = "Relation: ${face.relation}") // Relation
-                Text(text = "Date: ${face.date}") // Date
-            }
-        }
-    }
-}
 
 
-
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun LoginForm(navController: NavHostController) {
-    Log.d("LoginForm", "Composing LoginForm")
-    Scaffold(
-        backgroundColor = Color.Gray // Set the background color for Scaffold
-    ) {
-        Column(
-            Modifier
-                .padding(30.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.Bottom),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.faceguard_icon),
-                contentDescription = "Logo",
-                modifier = Modifier.size(200.dp),
-                contentScale = ContentScale.Fit
-            )
-
-            TextInput(InputType.Username)
-            TextInput(InputType.Password)
-
-            Button(
-                onClick = {
-
-                    navController.navigate("home")
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Login", Modifier.padding(vertical = 8.dp))
-            }
-
-            Divider(
-                color = Color.White,
-                thickness = 1.dp,
-                modifier = Modifier.padding(top = 48.dp)
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Don't have an account yet?", color = Color.White)
-                TextButton(onClick = { navController.navigate("registration") }) {
-                    Text("Sign Up")
-                }
-            }
-        }
-    }
-}
-
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun RegistrationForm(navController: NavHostController) {
-    Log.d("RegistrationForm", "Composing Registeration")
-    Scaffold(
-        backgroundColor = Color.Gray // Set the background color for Scaffold
-    ) {
-        Column(
-            Modifier
-                .padding(24.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.faceguard_icon),
-                contentDescription = "Logo",
-                modifier = Modifier.size(200.dp),
-                contentScale = ContentScale.Fit
-            )
-
-            TextInput(InputType.FirstName)
-            TextInput(InputType.Surname)
-            TextInput(InputType.Email)
-            TextInput(InputType.Password)
-            TextInput(InputType.ConfirmPassword)
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(onClick = { navController.navigate("login") }, modifier = Modifier.fillMaxWidth()) {
-                Text("Register", Modifier.padding(vertical = 8.dp))
-            }
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Divider(
-                color = Color.White,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Already have an Account?", color = Color.White)
-                TextButton(onClick = { navController.navigate("login") }) {
-                    Text("Login")
-                }
-            }
-        }
-    }
-}
 
 val CustomGray = Color(rgb(136, 136, 136)) // Custom gray color
 val Customtop = Color(rgb(133, 147, 122)) // Custom gray color
@@ -829,14 +454,6 @@ fun LiveFeedScreen(navController: NavHostController) {
 }
 
 
-class MyViewModel : ViewModel() {
-    private val _exampleLiveData = MutableLiveData("Default Value")
-    val exampleLiveData: LiveData<String> = _exampleLiveData
-
-    fun updateData(newValue: String) {
-        _exampleLiveData.value = newValue
-    }
-}
 
 
 
@@ -955,106 +572,3 @@ fun TextInput(inputType: InputType) {
         shape = RoundedCornerShape(16.dp) // Set the shape to be more rounded
     )
 }
-
-
-
-@Composable
-fun ChatMessageBox(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 8.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(Color.White, shape = MaterialTheme.shapes.small)
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-        ) {
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Send message at the Door", color = Color.Gray) },
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = Color.Black,
-                    cursorColor = Color.Black,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    placeholderColor = Color.Gray
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Transparent)
-            )
-
-            IconButton(onClick = { /* Handle send */ }) {
-                Icon(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "Send Message",
-                    tint = Color.Black
-                )
-            }
-        }
-    }
-}
-
-sealed class InputType(
-    val label: String,
-    val icon: ImageVector,
-    val keyboardOptions: KeyboardOptions,
-    val visualTransformation: VisualTransformation
-) {
-    object Username : InputType(
-        "Username",
-        Icons.Default.Person,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        VisualTransformation.None
-    )
-    object Password : InputType(
-        "Password",
-        Icons.Default.Lock,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        VisualTransformation.None
-    )
-    object FirstName : InputType(
-        "First Name",
-        Icons.Default.Person,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        VisualTransformation.None
-    )
-    object Surname : InputType(
-        "Surname",
-        Icons.Default.Person,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        VisualTransformation.None
-    )
-    object Email : InputType(
-        "Email",
-        Icons.Default.Email,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        VisualTransformation.None
-    )
-    object ConfirmPassword : InputType(
-        "Confirm Password",
-        Icons.Default.Lock,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        VisualTransformation.None
-    )
-    object relation : InputType(
-        "Relation",
-        Icons.Default.Person,
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        VisualTransformation.None
-    )
-
-}
-
-
-//enum class Screen {
-//    Login,
-//    Registration,
-//    HomePage,
-//    LiveFeed,
-//    AddNewFace
-//}
