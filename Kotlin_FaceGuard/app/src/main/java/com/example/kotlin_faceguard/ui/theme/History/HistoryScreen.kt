@@ -55,7 +55,7 @@ fun HistoryScreen(navController: NavHostController) {
         HistoryItem("John Doe", "Dec 2, 2023, 10:00 AM", true, R.drawable.newimage),
         HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
         HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.john_image_),
-        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.photo_output),
+        HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.newimage),
         HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.hannah),
         HistoryItem("John Doe", "Dec 1, 2023, 10:00 AM", true, R.drawable.john_image_),
         HistoryItem("John Doe", "Nov 28, 2023, 10:00 AM", true, R.drawable.newimage),

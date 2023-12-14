@@ -197,7 +197,7 @@ fun getCurrentRoute(navController: NavController): String? {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     BottomNavigation(
-        backgroundColor = MaterialTheme.colors.primary
+        backgroundColor = Color.Black
     ) {
         BottomNavigationItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home", tint = Color.White) },
@@ -257,7 +257,7 @@ enum class Screen(val route: String) {
 
 
 
-val CustomGray = Color(rgb(136, 136, 136)) // Custom gray color
+val CustomGray = Color(rgb(180, 192, 193)) // Custom gray color
 val Customtop = Color(rgb(133, 147, 122)) // Custom gray color
 
 
@@ -267,7 +267,7 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary,
+                backgroundColor = Color.Black,
                 title = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -286,11 +286,11 @@ fun HomeScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(CustomGray)
+                .background(Color.Black)
                 .padding(30.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.photooutputbgchange__1_),
+                painter = painterResource(id = R.drawable.newimg),
                 contentDescription = "Center Image",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -329,6 +329,7 @@ fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
     val cardSize = 150.dp
     Card(
         shape = RoundedCornerShape(12.dp),
+        backgroundColor = CustomGray,
         modifier = Modifier
             .size(cardSize)
             .aspectRatio(1f)
