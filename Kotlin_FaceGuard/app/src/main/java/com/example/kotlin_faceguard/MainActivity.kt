@@ -1,14 +1,19 @@
 package com.yourpackage.api.com.example.kotlin_faceguard
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.Color.rgb
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -72,20 +77,46 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+
 class MainActivity : ComponentActivity() {
+    private lateinit var reminderBroadcastReceiver: ReminderBroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("MainActivity", "onCreate started")
+
+        // Initialize and register the BroadcastReceiver
+//        reminderBroadcastReceiver = ReminderBroadcastReceiver()
+//        val filter = IntentFilter(ReminderBroadcastReceiver.ACTION_REMINDER)
+//        registerReceiver(reminderBroadcastReceiver, filter)
+//
+//        // Check and request SCHEDULE_EXACT_ALARM permission for Android 12 and above
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isExactAlarmPermissionGranted()) {
+//            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+//            startActivity(intent)
+//        }
+
         setContent {
             Kotlin_FaceGuardTheme {
-
                 // Main content goes here
                 MainScreen()
             }
         }
     }
-}
 
+//    private fun isExactAlarmPermissionGranted(): Boolean {
+//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            checkSelfPermission(Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED
+//        } else {
+//            true
+//        }
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        unregisterReceiver(reminderBroadcastReceiver)
+//    }
+}
 
 
 sealed class NavScreen(val route: String) {
@@ -589,6 +620,7 @@ fun TextInput(inputType: InputType) {
 class ReminderViewModel(application: Application) : AndroidViewModel(application) {
     private val context = getApplication<Application>().applicationContext
 
+    @SuppressLint("ScheduleExactAlarm")
     fun setReminder(reminder: Reminder) {
         val calendar = Calendar.getInstance().apply {
             time = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse("${reminder.date} ${reminder.time}")

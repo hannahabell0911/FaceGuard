@@ -7,6 +7,10 @@
 <!--    <uses-permission android:name="android.permission.SET_ALARM"/>-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+
+    ...
 
     <application
 
@@ -22,7 +26,8 @@
         tools:targetApi="33">
 
         <activity
-            android:name="com.yourpackage.api.com.example.kotlin_faceguard.MainActivity"
+
+           android:name="com.yourpackage.api.com.example.kotlin_faceguard.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Kotlin_FaceGuard">
             <intent-filter>
