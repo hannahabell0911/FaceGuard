@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,12 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.kotlin_faceguard.R
-import com.example.kotlin_faceguard.TextInput
+import com.yourpackage.api.com.example.kotlin_faceguard.TextInput
 
-import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.InputType
 
 

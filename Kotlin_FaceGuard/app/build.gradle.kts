@@ -95,6 +95,12 @@ dependencies {
             implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
             implementation ("androidx.compose.runtime:runtime-livedata:<compose_version>")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+            implementation ("androidx.room:room-runtime:2.4.2")
+            annotationProcessor ("androidx.room:room-compiler:2.4.2")
+            implementation( "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
+            implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+            implementation( "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1" )// Use the latest version
+
         }
 
     }

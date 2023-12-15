@@ -1,6 +1,12 @@
-package com.example.kotlin_faceguard
+package com.yourpackage.api.com.example.kotlin_faceguard
+
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color.rgb
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,12 +16,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,8 +26,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.kotlin_faceguard.ui.theme.Kotlin_FaceGuardTheme
 import androidx.compose.material.*
@@ -34,47 +34,43 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.launch
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.DrawerValue
-import androidx.compose.material.ModalDrawer
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberImagePainter
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.yourpackage.api.ApiService
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
-import com.yourpackage.api.RetrofitService
-import com.yourpackage.api.com.example.kotlin_faceguard.KnownFace
+
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontFamily
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.kotlin_faceguard.R
+import com.example.kotlin_faceguard.ui.ReminderScreen
 import com.example.kotlin_faceguard.ui.auth.LoginForm
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.History.HistoryScreen
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.auth.RegistrationForm
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.ChatMessageBox
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.InputType
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.knownFaces.KnownFacesScreen
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.AppDatabase
+import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.Reminder
+
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.settings.SettingsScreen
+
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,21 +96,18 @@ sealed class NavScreen(val route: String) {
 }
 
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-
-    // Getting the current route to determine if the bottom bar should be shown
-    val currentRoute = getCurrentRoute(navController)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         bottomBar = {
-            // Check if the current route is neither the login, registration, nor splash screen
-            if (currentRoute != Screen.Login.route
-                && currentRoute != Screen.Registration.route
-                && currentRoute != "splash") {
-                BottomNavigationBar(navController)
+            if (getCurrentRoute(navController) !in listOf("splash", Screen.Login.route, Screen.Registration.route)) {
+                BottomNavigationBar(navController, drawerState, coroutineScope)
             }
         }
     ) {
@@ -128,11 +121,17 @@ fun MainScreen() {
             composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
             composable(Screen.KnownFaces.route) { KnownFacesScreen(navController) }
-
+            composable(Screen.ReminderScreen.route) {
+                val viewModel: ReminderViewModel = viewModel() // This line is important
+                ReminderScreen(navController, viewModel)
+            }
+            // ... other composable routes ...
         }
     }
-
 }
+
+
+
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -195,7 +194,11 @@ fun getCurrentRoute(navController: NavController): String? {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(
+    navController: NavController,
+    drawerState: DrawerState,
+    coroutineScope: CoroutineScope
+) {
     BottomNavigation(
         backgroundColor = Color.Black
     ) {
@@ -226,21 +229,21 @@ fun BottomNavigationBar(navController: NavController) {
             }
         )
         BottomNavigationItem(
-            icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White) },
-            label = { Text("Settings", color = Color.White) },
-            selected = navController.currentDestination?.route == Screen.Settings.route,
+            icon = { Icon(Icons.Default.AddCircle, contentDescription = "Add Reminder", tint = Color.White ) },
+            label = { Text("Add Reminder") },
+            selected = navController.currentDestination?.route == "reminder",
             onClick = {
-                if (navController.currentDestination?.route != Screen.Settings.route) {
-                    navController.navigate(Screen.Settings.route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
+                navController.navigate("reminder") {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
                 }
             }
         )
-
     }
 }
+
+
+
 
 enum class Screen(val route: String) {
     Login("login"),
@@ -250,7 +253,8 @@ enum class Screen(val route: String) {
     Settings("settings"),
     LiveFeed("liveFeed"),
     AddNewFace("addNewFace"),
-    KnownFaces("knownFaces")
+    KnownFaces("knownFaces"),
+    ReminderScreen("reminder")
     // ... other screen routes ...
 }
 
@@ -270,19 +274,27 @@ fun HomeScreen(navController: NavController) {
                 backgroundColor = Color.Black,
                 title = {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp), // Add padding if needed
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Spacer(modifier = Modifier.weight(1f)) // Pushes the text to the center
                         Text(
                             "FaceGuard",
                             color = Color.White,
                             style = MaterialTheme.typography.h4
                         )
+                        Spacer(modifier = Modifier.weight(1f)) // Balances the space on the right
+                        IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                            Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+                        }
                     }
                 }
             )
         }
-    ) {
+    )  {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -290,7 +302,7 @@ fun HomeScreen(navController: NavController) {
                 .padding(30.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.newimg),
+                painter = painterResource(id = R.drawable.untitled_photoroom_mswp8xk7e_transformed),
                 contentDescription = "Center Image",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -572,4 +584,26 @@ fun TextInput(inputType: InputType) {
         visualTransformation = inputType.visualTransformation,
         shape = RoundedCornerShape(16.dp) // Set the shape to be more rounded
     )
+}
+
+class ReminderViewModel(application: Application) : AndroidViewModel(application) {
+    private val context = getApplication<Application>().applicationContext
+
+    fun setReminder(reminder: Reminder) {
+        val calendar = Calendar.getInstance().apply {
+            time = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse("${reminder.date} ${reminder.time}")
+        }
+
+        val intent = Intent(context, ReminderBroadcastReceiver::class.java)
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+        viewModelScope.launch {
+            AppDatabase.getDatabase(context).reminderDao().insertReminder(reminder)
+        }
+    }
+
+
 }
