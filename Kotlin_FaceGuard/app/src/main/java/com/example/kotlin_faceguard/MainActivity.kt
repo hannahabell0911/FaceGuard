@@ -513,7 +513,7 @@ fun LiveFeedScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-             ChatMessageBox() // Uncomment or add relevant code here if needed
+             ChatMessageBox()
         }
     }
 }
