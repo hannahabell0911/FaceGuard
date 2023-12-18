@@ -54,6 +54,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.ui.text.font.FontFamily
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,6 +69,7 @@ import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.Input
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.knownFaces.KnownFacesScreen
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.AppDatabase
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.Reminder
+import com.yourpackage.api.com.example.kotlin_faceguard.ReminderBroadcastReceiver
 
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.settings.SettingsScreen
 
@@ -76,7 +78,7 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private lateinit var reminderBroadcastReceiver: ReminderBroadcastReceiver
@@ -84,17 +86,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("MainActivity", "onCreate started")
-
-        // Initialize and register the BroadcastReceiver
-//        reminderBroadcastReceiver = ReminderBroadcastReceiver()
-//        val filter = IntentFilter(ReminderBroadcastReceiver.ACTION_REMINDER)
-//        registerReceiver(reminderBroadcastReceiver, filter)
-//
-//        // Check and request SCHEDULE_EXACT_ALARM permission for Android 12 and above
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isExactAlarmPermissionGranted()) {
-//            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-//            startActivity(intent)
-//        }
 
         setContent {
             Kotlin_FaceGuardTheme {
@@ -104,6 +95,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//        // Initialize and register the BroadcastReceiver
+//        reminderBroadcastReceiver = ReminderBroadcastReceiver()
+//        val filter = IntentFilter(ReminderBroadcastReceiver.ACTION_REMINDER)
+//        registerReceiver(reminderBroadcastReceiver, filter)
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        // Unregister the BroadcastReceiver
+//        unregisterReceiver(reminderBroadcastReceiver)
+//    }
+//
+//    fun requestExactAlarmPermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isExactAlarmPermissionGranted()) {
+//            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+//            ContextCompat.startActivity(this, intent, null)
+//        }
+//    }
+//
 //    private fun isExactAlarmPermissionGranted(): Boolean {
 //        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 //            checkSelfPermission(Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED
@@ -111,12 +123,9 @@ class MainActivity : ComponentActivity() {
 //            true
 //        }
 //    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        unregisterReceiver(reminderBroadcastReceiver)
-//    }
 }
+
+// Implement MainScreen Composable Function and other necessary components
 
 
 sealed class NavScreen(val route: String) {
@@ -396,70 +405,77 @@ fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
         }
     }
 }
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LiveFeedScreen(navController: NavHostController) {
+    // Random generator for scenarios
+    val scenario = remember { mutableStateOf(Random.nextInt(1, 4)) }
+
+    val isUnknown = scenario.value == 1
+    val isError = scenario.value == 3
+    val personName = if (isUnknown || isError) "Unknown" else "Frank"
+    val relationWithOwner = if (isUnknown || isError) "Unknown" else "Friend"
+    val imageResource = when (scenario.value) {
+        1 -> R.drawable.faceguard_icon // Replace with your resource for unknown person
+        2 -> R.drawable.hannah // Replace with your resource for Frank
+        3 -> R.drawable.john_image_ // Replace with your resource for error scenario
+        else -> R.drawable.hannah // Default image if needed
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        // Back button
                         IconButton(onClick = { navController.navigate("home") }) {
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                         }
-                        // Spacer to push the title to the center
                         Spacer(modifier = Modifier.weight(0.55f))
-                        // Title
                         Text(
                             "FaceGuard",
                             color = Color.White,
                             style = MaterialTheme.typography.h4
                         )
-                        // Another spacer to balance the layout
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             )
         }
-    )
-    {
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Gray)
                 .padding(20.dp)
         ) {
-            Spacer(modifier = Modifier.height(0.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Unknown",
+                    text = personName,
                     color = Color.White,
                     style = TextStyle(fontSize = 28.sp),
                     modifier = Modifier.weight(4f)
                 )
 
-                Button(
-                    onClick = { navController.navigate("addNewFace") },
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = Color.White
-                    )
+                if (isUnknown) {
+                    Button(
+                        onClick = { navController.navigate("addNewFace") },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
 
@@ -472,7 +488,7 @@ fun LiveFeedScreen(navController: NavHostController) {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.hannah),
+                    painter = painterResource(id = imageResource),
                     contentDescription = "Live feed image",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -481,23 +497,26 @@ fun LiveFeedScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
-                Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
-                Text("Face detected: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
-                Text("Relationship: Unknown", color = Color.White, style = MaterialTheme.typography.h6)
+            if (!isError) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
+                    Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
+                    Text("Face detected: $personName", color = Color.White, style = MaterialTheme.typography.h6)
+                    Text("Relationship: $relationWithOwner", color = Color.White, style = MaterialTheme.typography.h6)
+                }
+            } else {
+                Text("Error: Face not detected properly", color = Color.Red, style = MaterialTheme.typography.h6)
             }
-            Spacer(modifier = Modifier.height(25.dp))
 
-            ChatMessageBox()
+            Spacer(modifier = Modifier.height(40.dp))
+
+             ChatMessageBox() // Uncomment or add relevant code here if needed
         }
     }
 }
-
-
 
 
 

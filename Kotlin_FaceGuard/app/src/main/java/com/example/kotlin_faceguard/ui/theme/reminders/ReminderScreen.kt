@@ -6,15 +6,17 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.*
 import android.os.*
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yourpackage.api.com.example.kotlin_faceguard.ReminderBroadcastReceiver
 import com.yourpackage.api.com.example.kotlin_faceguard.ReminderViewModel
@@ -85,43 +87,62 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
             errorMessage = "Error creating reminder: ${e.message}"
         }
     }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary, // Use the primary color for the background
+                backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     Text(
-                        "FaceGuard", // The title text
-                        color = Color.White, // Set the text color to white
-                        modifier = Modifier.fillMaxWidth(), // Fill the width of the top bar
-                        textAlign = TextAlign.Center // Align the text to the center
+                        "FaceGuard",
+                        color = Color.White,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                                fontSize = 30.sp
                     )
                 }
             )
-        },scaffoldState = scaffoldState) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        },
+//        scaffoldState = scaffoldState
+    ) {
+        Column(modifier = Modifier.padding(30.dp)) {
+            Text(
+                "Create a Reminder",
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
             TextField(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Name") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
-            WorkTypeDropdown(selectedWorkType = selectedWorkType, onWorkTypeSelected = { selectedWorkType = it })
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Row {
+
+            Row() {
+                Text("Select Type of Work", modifier = Modifier.weight(1f))
+                WorkTypeDropdown(selectedWorkType = selectedWorkType, onWorkTypeSelected = { selectedWorkType = it })
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+
+            Row() {
+                Text("Date and Time", modifier = Modifier.weight(1f))
                 OutlinedButton(onClick = { showDatePicker() }) {
                     Text(if (selectedDate.isEmpty()) "Select Date" else selectedDate)
                 }
+                // Horizontal space between buttons
                 Spacer(modifier = Modifier.width(8.dp))
                 OutlinedButton(onClick = { showTimePicker() }) {
                     Text("${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}")
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = { createReminder() },
@@ -131,6 +152,7 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
             }
         }
     }
+
 
     if (showSnackbar) {
         LaunchedEffect(key1 = Unit) {
@@ -225,15 +247,10 @@ fun WorkTypeDropdown(selectedWorkType: String, onWorkTypeSelected: (String) -> U
     }
 }
 
-
+@SuppressLint("ScheduleExactAlarm")
 fun scheduleReminder(context: Context, reminder: Reminder) {
-    val calendar = Calendar.getInstance().apply {
-        time = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse("${reminder.date} ${reminder.time}")!!
-    }
-
-    val intent = Intent(context, ReminderBroadcastReceiver::class.java).apply {
-        action = ReminderBroadcastReceiver.ACTION_REMINDER
-    }
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, ReminderBroadcastReceiver::class.java)
 
     val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -242,18 +259,12 @@ fun scheduleReminder(context: Context, reminder: Reminder) {
     }
 
     val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, pendingIntentFlags)
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
 
-    try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager?.canScheduleExactAlarms()!! == true) {
-            // Inform the user that the exact alarm cannot be scheduled without permission
-            // Consider showing a dialog or a toast message here
-            // Optionally, launch ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent
-        } else {
-            alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-        }
-    } catch (e: SecurityException) {
-        // Handle the security exception if the app does not have SCHEDULE_EXACT_ALARM permission
-        // Consider showing a dialog or a toast message here
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = System.currentTimeMillis()
+        set(Calendar.HOUR_OF_DAY, reminder.hour)
+        set(Calendar.MINUTE, reminder.minute)
     }
+
+    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 }

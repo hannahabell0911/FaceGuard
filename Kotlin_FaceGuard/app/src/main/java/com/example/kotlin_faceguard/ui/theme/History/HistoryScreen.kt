@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.yourpackage.api.com.example.kotlin_faceguard.CustomGray
+
 import com.example.kotlin_faceguard.R
 
 
@@ -89,7 +89,7 @@ fun HistoryScreen(navController: NavHostController) {
                 }
             )
         },
-        backgroundColor = CustomGray // bg color
+        backgroundColor = Color.Gray // bg color
     ) {
         Column {
             Row(
