@@ -6,15 +6,17 @@ from datetime import datetime
 import subprocess
 import logging
 
+import cv2
+
 from flask import Flask, send_file, jsonify
-from camera import capture_image
+# from camera import capture_image
 import gpiozero
-from picamera import PiCamera
+# from picamera import PiCamera
 from datetime import datetime
-import face_recognition
+# import face_recognition
 import mysql.connector
 from mysql.connector import Error
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import Error
 import os
