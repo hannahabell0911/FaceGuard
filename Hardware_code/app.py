@@ -39,6 +39,11 @@ GPIO.setup(PIR_pin, GPIO.IN)
 GPIO.setup(Buzzer_pin, GPIO.OUT)
 GPIO.setup(Led_pin, GPIO.OUT)
 
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+def prompt_user_to_stand():
+    speak("Motion detected. Please stand in front of the camera.")
+
 
 def beep(repeat):
     for _ in range(repeat):
@@ -61,19 +66,51 @@ def capture_photo():
     filename = f"/home/tiao/Desktop/images/MotionImage_{timestamp}.jpg"
     subprocess.run(["fswebcam", "-r", "1280x720", "--no-banner", filename])
     logging.info(f"{timestamp} - Picture captured: {filename}")
+
+
+def detect_faces(image_path):
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    return len(faces) > 0
+
+def take_picture():
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = f"captured_image_{timestamp}.jpg"
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        return None
+    time.sleep(3)  # Wait for camera to adjust
+    ret, frame = cap.read()
+    if not ret:
+        print("Can't receive frame (stream end?). Exiting ...")
+        return None
+    cv2.imwrite(filename, frame)
+    cap.release()
+    return filename
+
     
-
-
 def motionDetection():
     while True:
         if GPIO.input(PIR_pin):
-            print("Motion Dectected")
+            print("Motion Detected")
             speak("Motion detected")
             GPIO.output(Led_pin, True)
-            beep(4)  
-            capture_photo()
-            print("Picture Taken")
-            speak("Picture Taken")
+            beep(4)
+            prompt_user_to_stand()
+
+            # Wait for a few seconds to give the user time to stand in front of the camera
+            time.sleep(10)
+
+            captured_image = take_picture()
+            if captured_image and detect_faces(captured_image):
+                print("Face Detected")
+                speak("Face detected")
+                # Your existing code for further processing goes here
+            else:
+                print("No Face Detected")
+                speak("No face detected")
             GPIO.output(Led_pin, False)
         time.sleep(1)
 
