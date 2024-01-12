@@ -107,7 +107,7 @@ def motionDetection():
             if captured_image and detect_faces(captured_image):
                 print("Face Detected")
                 speak("Face detected")
-                # Your existing code for further processing goes here
+                
             else:
                 print("No Face Detected")
                 speak("No face detected")
