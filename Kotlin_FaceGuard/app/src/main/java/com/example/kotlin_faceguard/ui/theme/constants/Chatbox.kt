@@ -20,41 +20,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.*
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+
+
+import androidx.compose.ui.platform.LocalContext
+
+import com.pubnub.api.PubNub
+import com.yourpackage.api.com.example.kotlin_faceguard.MainActivity
+
 import androidx.compose.material.*
 
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.runtime.*
+
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 
 
 @Composable
-fun ChatMessageBox(modifier: Modifier = Modifier) {
+fun ChatMessageBox(
+    modifier: Modifier = Modifier,
+    channelName: String,
+    pubnub: PubNub,
+    onMessageSent: () -> Unit
+) {
     var text by remember { mutableStateOf("") }
     var messageSent by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    fun sendMessageToPubNub(message: String) {
+        // Ensure that this function does not contain @Composable invocations
+        val messagePayload = mapOf("text" to message, "userId" to "myUserId") // Replace "myUserId" with the actual user ID
+
+        (context as MainActivity).sendMessageToPubNub(channelName, messagePayload) { success ->
+            messageSent = success
+        }
+    }
 
     LaunchedEffect(messageSent) {
         if (messageSent) {
-            delay(3000) // Revert back after 3 seconds
+            delay(3000) // Delay for 3 seconds
             messageSent = false
-            text = ""
+            text = "" // Reset the text field
+            onMessageSent() // Notify the caller that the message has been sent
         }
     }
 
@@ -66,48 +75,43 @@ fun ChatMessageBox(modifier: Modifier = Modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(if (!messageSent) Color.White else Color.Green, shape = MaterialTheme.shapes.small.copy(CornerSize(12.dp)))
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-        ) {
-            if (!messageSent) {
-                TextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    placeholder = { Text("Send message at the Door", color = Color.Gray) },
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = Color.Black,
-                        cursorColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        backgroundColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
+                .background(
+                    if (!messageSent) MaterialTheme.colors.surface
+                    else MaterialTheme.colors.primary,
+                    shape = MaterialTheme.shapes.small
                 )
-
-                IconButton(onClick = {
-                    if (text.isNotEmpty()) {
-                        messageSent = true
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Send Message",
-                        tint = Color.Black
-                    )
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = { Text("Type a message") },
+                modifier = Modifier.weight(1f),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent
+                )
+            )
+            IconButton(onClick = {
+                if (text.isNotEmpty()) {
+                    sendMessageToPubNub(text)
                 }
-            } else {
-                Text(
-                    "Message Sent to the Door",
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = "Send",
+                    tint = MaterialTheme.colors.onSurface
                 )
             }
+        }
+
+        if (messageSent) {
+            Text(
+                "Message Sent",
+                color = MaterialTheme.colors.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }

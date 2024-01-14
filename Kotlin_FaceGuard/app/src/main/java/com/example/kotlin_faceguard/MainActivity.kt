@@ -1,19 +1,15 @@
 package com.yourpackage.api.com.example.kotlin_faceguard
 
 
-import android.Manifest
+
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.graphics.Color.rgb
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -49,12 +45,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.ui.text.font.FontFamily
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,7 +63,6 @@ import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.constants.Input
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.knownFaces.KnownFacesScreen
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.AppDatabase
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.reminders.Reminder
-import com.yourpackage.api.com.example.kotlin_faceguard.ReminderBroadcastReceiver
 
 import com.yourpackage.api.com.example.kotlin_faceguard.ui.theme.settings.SettingsScreen
 
@@ -80,52 +73,49 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.random.Random
 
+import com.pubnub.api.PubNub
+import com.pubnub.api.PNConfiguration
+import com.pubnub.api.UserId
+import kotlinx.coroutines.MainScope
+
+
+import java.util.*
+
+
 class MainActivity : ComponentActivity() {
-    private lateinit var reminderBroadcastReceiver: ReminderBroadcastReceiver
+    private lateinit var pubnub: PubNub
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MainActivity", "onCreate started")
+
+        // Initialize PubNub
+        val pnConfiguration = PNConfiguration(UserId("myUserId")).apply {
+            subscribeKey = "sub-c-d08a3064-f96b-44d4-a838-c4f770a1964a"
+            publishKey = "pub-c-ed4d609e-2f6d-4678-922b-4abf4ebff4b3"
+            secure = true
+        }
+        pubnub = PubNub(pnConfiguration)
 
         setContent {
             Kotlin_FaceGuardTheme {
-                // Main content goes here
-                MainScreen()
+
+                 MainScreen(pubnub = pubnub)
             }
         }
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        // Initialize and register the BroadcastReceiver
-//        reminderBroadcastReceiver = ReminderBroadcastReceiver()
-//        val filter = IntentFilter(ReminderBroadcastReceiver.ACTION_REMINDER)
-//        registerReceiver(reminderBroadcastReceiver, filter)
-//    }
-//
-//    override fun onStop() {
-//        super.onStop()
-//        // Unregister the BroadcastReceiver
-//        unregisterReceiver(reminderBroadcastReceiver)
-//    }
-//
-//    fun requestExactAlarmPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isExactAlarmPermissionGranted()) {
-//            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-//            ContextCompat.startActivity(this, intent, null)
-//        }
-//    }
-//
-//    private fun isExactAlarmPermissionGranted(): Boolean {
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            checkSelfPermission(Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED
-//        } else {
-//            true
-//        }
-//    }
+    fun sendMessageToPubNub(channelName: String, message: Map<String, String>, onResult: (Boolean) -> Unit) {
+        CoroutineScope(MainScope().coroutineContext).launch {
+            try {
+                val result = pubnub.publish(channel = channelName, message = message).sync()
+                onResult(result != null)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
 }
 
-// Implement MainScreen Composable Function and other necessary components
 
 
 sealed class NavScreen(val route: String) {
@@ -139,7 +129,7 @@ sealed class NavScreen(val route: String) {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(pubnub: PubNub) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -158,7 +148,7 @@ fun MainScreen() {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
-            composable(Screen.LiveFeed.route) { LiveFeedScreen(navController) }
+            composable(Screen.LiveFeed.route) { LiveFeedScreen(navController, pubnub) }
             composable(Screen.AddNewFace.route) { AddNewFace(navController) }
             composable(Screen.KnownFaces.route) { KnownFacesScreen(navController) }
             composable(Screen.ReminderScreen.route) {
@@ -178,9 +168,8 @@ fun SplashScreen(navController: NavController) {
     val visible = remember { mutableStateOf(true) }
 
     LaunchedEffect(key1 = true) {
-        delay(2000) // Duration of the splash screen
-        visible.value = false
-        delay(500) // Additional delay for the fade-out animation
+        delay(2000)
+        delay(500)
         navController.navigate(Screen.Login.route) {
             popUpTo("splash") { inclusive = true }
         }
@@ -407,19 +396,19 @@ fun FeatureCard(title: String, icon: ImageVector, onClick: () -> Unit) {
 }
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun LiveFeedScreen(navController: NavHostController) {
+fun LiveFeedScreen(navController: NavHostController, pubnub: PubNub) {
     // Random generator for scenarios
     val scenario = remember { mutableStateOf(Random.nextInt(1, 4)) }
 
     val isUnknown = scenario.value == 1
     val isError = scenario.value == 3
     val personName = if (isUnknown || isError) "Unknown" else "Frank"
-    val relationWithOwner = if (isUnknown || isError) "Unknown" else "Friend"
+    val relationWithOwner = if (isUnknown || isError) "Unknown" else "Known"
     val imageResource = when (scenario.value) {
-        1 -> R.drawable.faceguard_icon // Replace with your resource for unknown person
-        2 -> R.drawable.hannah // Replace with your resource for Frank
-        3 -> R.drawable.john_image_ // Replace with your resource for error scenario
-        else -> R.drawable.hannah // Default image if needed
+        1 -> R.drawable.hannah
+        2 -> R.drawable.john_image_
+        3 -> R.drawable.errorimg
+        else -> R.drawable.hannah
     }
 
     Scaffold(
@@ -508,15 +497,32 @@ fun LiveFeedScreen(navController: NavHostController) {
                     Text("Relationship: $relationWithOwner", color = Color.White, style = MaterialTheme.typography.h6)
                 }
             } else {
-                Text("Error: Face not detected properly", color = Color.Red, style = MaterialTheme.typography.h6)
+                // Error scenario display
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Today", color = Color.White, style = MaterialTheme.typography.h5)
+                    Text("Motion detected at: 6.28 am", color = Color.White, style = MaterialTheme.typography.h6)
+                    Text("Face detected: Error", color = Color.White, style = MaterialTheme.typography.h6)
+                    Text("Relationship: Error", color = Color.White, style = MaterialTheme.typography.h6)
+                    Text("Error: Face not detected properly", color = Color.Red, style = MaterialTheme.typography.h5)
+                }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
-             ChatMessageBox()
+            ChatMessageBox(
+                modifier = Modifier.padding(8.dp), // Adjust the modifier as needed
+                channelName = "Channel-Barcelona", // Replace with the actual channel name
+                pubnub = pubnub,
+                onMessageSent = {
+                    // Implementation for what happens when a message is sent
+                })
         }
     }
 }
+
 
 
 
@@ -642,7 +648,10 @@ class ReminderViewModel(application: Application) : AndroidViewModel(application
     @SuppressLint("ScheduleExactAlarm")
     fun setReminder(reminder: Reminder) {
         val calendar = Calendar.getInstance().apply {
-            time = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse("${reminder.date} ${reminder.time}")
+            time = SimpleDateFormat(
+                "yyyy-MM-dd HH:mm",
+                Locale.getDefault()
+            ).parse("${reminder.date} ${reminder.time}")
         }
 
         val intent = Intent(context, ReminderBroadcastReceiver::class.java)

@@ -34,7 +34,7 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
     var name by remember { mutableStateOf("") }
     var selectedWorkType by remember { mutableStateOf("") }
     var showSnackbar by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
 
@@ -72,7 +72,7 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
     @SuppressLint("ScheduleExactAlarm")
     fun createReminder() {
         if (selectedDate.isBlank() || name.isBlank() || selectedWorkType.isBlank()) {
-            errorMessage = "Please fill all fields"
+            successMessage = "Please fill all fields"
             return
         }
         try {
@@ -82,9 +82,10 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
             scheduleReminder(context, reminder)
 
             showSnackbar = true
+            successMessage = "Reminder Created Successfully"
             navController.popBackStack() // Go back after setting the reminder
         } catch (e: Exception) {
-            errorMessage = "Error creating reminder: ${e.message}"
+            successMessage = "Error creating reminder: ${e.message}"
         }
     }
     Scaffold(
@@ -97,21 +98,20 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
                         color = Color.White,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                                fontSize = 30.sp
+                        fontSize = 30.sp
                     )
                 }
             )
-        },
-//        scaffoldState = scaffoldState
+        }
     ) {
-        Column(modifier = Modifier.padding(30.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 "Create a Reminder",
-                fontSize = 35.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
                 value = name,
@@ -120,29 +120,29 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-
-            Row() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Select Type of Work", modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
                 WorkTypeDropdown(selectedWorkType = selectedWorkType, onWorkTypeSelected = { selectedWorkType = it })
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-
-            Row() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Date and Time", modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
                 OutlinedButton(onClick = { showDatePicker() }) {
                     Text(if (selectedDate.isEmpty()) "Select Date" else selectedDate)
                 }
-                // Horizontal space between buttons
                 Spacer(modifier = Modifier.width(8.dp))
                 OutlinedButton(onClick = { showTimePicker() }) {
                     Text("${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}")
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { createReminder() },
@@ -153,7 +153,6 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
         }
     }
 
-
     if (showSnackbar) {
         LaunchedEffect(key1 = Unit) {
             scaffoldState.snackbarHostState.showSnackbar("Reminder Created Successfully")
@@ -161,19 +160,20 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel) {
         }
     }
 
-    errorMessage?.let {
+    successMessage?.let {
         AlertDialog(
-            onDismissRequest = { errorMessage = null },
-            title = { Text("Error") },
-            text = { Text(it) },
+            onDismissRequest = { successMessage = null },
+            title = { Text("Successfully added a Reminder") },
+//            text = { Text(it) },
             confirmButton = {
-                Button(onClick = { errorMessage = null }) {
+                Button(onClick = { successMessage = null }) {
                     Text("OK")
                 }
             }
         )
     }
 }
+
 fun showDatePicker(context: Context, selectedDate: MutableState<String>) {
     val calendar = Calendar.getInstance()
     DatePickerDialog(
