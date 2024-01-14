@@ -254,4 +254,34 @@ def ring_doorbell():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
+
+
+# # PubNub setup
+# random_uuid = str(uuid.uuid4())
+# pnconfig = PNConfiguration()
+# pnconfig.uuid = random_uuid
+# pnconfig.subscribe_key = "subkey"
+# pnconfig.publish_key = "pubkey3"
+# pnconfig.ssl = True
+# pubnub = PubNub(pnconfig)
+
+# # Callback function for PubNub
+# class MyListener(SubscribeCallback):
+#     def message(self, pubnub, message):
+#         text = message.message
+#         speak(text)
+
+# # Subscribe to the channel
+# listener = MyListener()
+# pubnub.add_listener(listener)
+# pubnub.subscribe().channels('Channel-Barcalona').execute()
+
+# # Function to convert text to speech
+# def speak(text):
+#     engine = pyttsx3.init()
+#     rate = engine.getProperty('rate')
+#     engine.setProperty('rate', rate - 50)
+#     engine.say(text)
+#     engine.runAndWait()
     
